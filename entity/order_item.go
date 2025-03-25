@@ -1,9 +1,9 @@
 package entity
 
 type OrderItem struct {
-	ID           int64
-	OrderID      int64
-	InstrumentID int64
+	ID           int
+	OrderID      int
+	InstrumentID int
 	Quantity     int
 	Price        float64
 }

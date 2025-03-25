@@ -1,8 +1,8 @@
 package entity
 
 type Order struct {
-	ID              int64
-	UserID          int64
+	ID              int
+	UserID          int
 	OrderDate       string
 	DeliveryAddress string
 	TotalPrice      float64

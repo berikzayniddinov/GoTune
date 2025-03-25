@@ -1,7 +1,7 @@
 package entity
 
 type Instrument struct {
-	ID             int64
+	ID             int
 	Name           string
 	Description    string
 	Type           string
