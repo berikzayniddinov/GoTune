@@ -1,4 +1,4 @@
-package entity
+package Entities
 
 type Instrument struct {
 	ID             int

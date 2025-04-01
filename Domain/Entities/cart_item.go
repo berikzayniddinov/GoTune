@@ -1,4 +1,4 @@
-package entity
+package Entities
 
 type CartItem struct {
 	ID           int
