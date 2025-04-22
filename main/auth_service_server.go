@@ -1,12 +1,15 @@
+// main.go
+
 package main
 
 import (
 	"log"
 	"net"
 
-	"github.com/berik/GoTune/Application/services"
 	"github.com/berik/GoTune/Infrastructure/Persistence/Context"
-	"github.com/berik/GoTune/Infrastructure/Persistence/repositories"
+	"github.com/berik/GoTune/Internal/Repositories"
+	"github.com/berik/GoTune/Internal/Services"
+	"github.com/berik/GoTune/Presentation/Controllers"
 	pb "github.com/berik/GoTune/proto"
 	"google.golang.org/grpc"
 )
@@ -25,13 +28,15 @@ func main() {
 		log.Fatalf("failed to init user table: %v", err)
 	}
 
-	// Создание репозитория и сервиса
 	userRepo := Repositories.NewPostgresUserRepository(db)
-	userService := services.NewAuthService(userRepo)
+	authService := Services.NewAuthService(userRepo)
+
+	// Создание контроллера
+	authController := Controllers.NewAuthController(authService)
 
 	// Настройка gRPC сервера
 	server := grpc.NewServer()
-	pb.RegisterUserServiceServer(server, userService)
+	pb.RegisterUserServiceServer(server, authController)
 
 	// Запуск сервера
 	lis, err := net.Listen("tcp", port)

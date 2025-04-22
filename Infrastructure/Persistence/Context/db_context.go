@@ -15,14 +15,15 @@ const (
 	Port     = 5432
 	User     = "postgres"
 	Password = "password" // Замените на ваш пароль
-	DbName   = "gotune"
+	DbName   = "dbhabit"
+	Schema   = "gotune"
 )
 
 // NewPostgresDB создает новое подключение к PostgreSQL
 func NewPostgresDB() (*sql.DB, error) {
 	// Строка подключения к PostgreSQL
-	connStr := fmt.Sprintf("host=%s port=%d instrument=%s password=%s dbname=%s sslmode=disable",
-		Host, Port, User, Password, DbName)
+	connStr := fmt.Sprintf("host=%s port=%d instrument=%s password=%s dbname=%s schema=%s sslmode=disable",
+		Host, Port, User, Password, DbName, Schema)
 
 	// Подключение к базе данных
 	db, err := sql.Open("postgres", connStr)

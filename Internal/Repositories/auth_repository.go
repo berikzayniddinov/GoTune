@@ -9,16 +9,6 @@ import (
 	"github.com/berik/GoTune/Domain/Entities"
 )
 
-type UserRepository interface {
-	Create(ctx context.Context, user *Entities.User) error
-	GetByID(ctx context.Context, id int) (*Entities.User, error)
-	GetByUsername(ctx context.Context, username string) (*Entities.User, error)
-	GetByEmail(ctx context.Context, email string) (*Entities.User, error)
-	Update(ctx context.Context, user *Entities.User) error
-	Delete(ctx context.Context, id int) error
-	List(ctx context.Context, limit, offset int) ([]*Entities.User, error)
-}
-
 type PostgresUserRepository struct {
 	db *sql.DB
 }

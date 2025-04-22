@@ -8,7 +8,7 @@ package proto
 
 import (
 	context "context"
-	"github.com/berik/GoTune/Application/services"
+	"github.com/berik/GoTune/Presentation/Controllers"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -151,7 +151,7 @@ type UnsafeUserServiceServer interface {
 	mustEmbedUnimplementedUserServiceServer()
 }
 
-func RegisterUserServiceServer(s grpc.ServiceRegistrar, srv *services.AuthService) {
+func RegisterUserServiceServer(s grpc.ServiceRegistrar, srv *Controllers.AuthController) {
 	s.RegisterService(&UserService_ServiceDesc, srv)
 }
 
