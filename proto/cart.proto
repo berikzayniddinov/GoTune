@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package cart;
+
+option go_package = "gotune/cart/proto;cartpb";
+
+service CartService {
+  rpc AddToCart (AddToCartRequest) returns (AddToCartResponse);
+  rpc GetCart (GetCartRequest) returns (GetCartResponse);
+  rpc RemoveFromCart (RemoveFromCartRequest) returns (RemoveFromCartResponse);
+  rpc ClearCart (ClearCartRequest) returns (ClearCartResponse);
+}
+
+message AddToCartRequest {
+  string user_id = 1;
+  string instrument_id = 2;
+  int32 quantity = 3;
+}
+
+message AddToCartResponse {
+  bool success = 1;
+}
+
+message GetCartRequest {
+  string user_id = 1;
+}
+
+message CartItem {
+  string instrument_id = 1;
+  int32 quantity = 2;
+}
+
+message GetCartResponse {
+  repeated CartItem items = 1;
+}
+
+message RemoveFromCartRequest {
+  string user_id = 1;
+  string instrument_id = 2;
+}
+
+message RemoveFromCartResponse {
+  bool success = 1;
+}
+
+message ClearCartRequest {
+  string user_id = 1;
+}
+
+message ClearCartResponse {
+  bool success = 1;
+}

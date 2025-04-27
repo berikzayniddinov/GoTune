@@ -5,20 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="93decae8-afc0-4096-b94e-f8d18597fa33" name="Changes" comment="инструмент сервис готов">
-      <change afterPath="$PROJECT_DIR$/api-gateway/internal/client/grpc_users_client.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/api-gateway/internal/handler/instruments_handler.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/instruments/cmd/main.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/instruments/internal/config/mongo.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/instruments/internal/entity/instrument.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/instruments/internal/repository/instrument_mongo.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/instruments/internal/service/instrument_service.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/instruments/proto/instruments.pb.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/instruments/proto/instruments_grpc.pb.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cart/internal/service/cart_service.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/api-gateway/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/cmd/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/proto/instruments.proto" beforeDir="false" afterPath="$PROJECT_DIR$/proto/instruments.proto" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/events/cart_checked_out.go" beforeDir="false" afterPath="$PROJECT_DIR$/events/cart_checked_out.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/proto/cart.proto" beforeDir="false" afterPath="$PROJECT_DIR$/proto/cart.proto" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -90,11 +81,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\berik\GolandProjects\GoTune\cart\proto" />
       <recent name="C:\Users\berik\GolandProjects\GoTune\instruments\proto" />
       <recent name="C:\Users\berik\GolandProjects\GoTune\users\proto" />
       <recent name="C:\Users\berik\GolandProjects\GoTune\api-gateway\cmd" />
       <recent name="C:\Users\berik\GolandProjects\GoTune\Internal" />
-      <recent name="C:\Users\berik\GolandProjects\GoTune\Internal\Services" />
     </key>
   </component>
   <component name="RunManager">
