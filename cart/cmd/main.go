@@ -28,7 +28,7 @@ func main() {
 	}()
 
 	db := mongoClient.Database(dbName)
-	cartRepo := repository.NewCartRepository(db)
+	cartRepo := repository.NewCartRepositories(db)
 	cartService := service.NewCartService(cartRepo)
 
 	grpcServer := grpc.NewServer()

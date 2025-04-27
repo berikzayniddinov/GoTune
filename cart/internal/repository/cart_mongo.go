@@ -20,7 +20,7 @@ type cartRepository struct {
 	collection *mongo.Collection
 }
 
-func NewCartRepository(db *mongo.Database) CartRepository {
+func NewCartRepositories(db *mongo.Database) CartRepository {
 	return &cartRepository{
 		collection: db.Collection("carts"),
 	}
