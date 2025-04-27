@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package users;
+
+option go_package = "gotune/users/proto;userspb";
+
+service UserService {
+  rpc RegisterUser (RegisterUserRequest) returns (RegisterUserResponse);
+  rpc LoginUser (LoginUserRequest) returns (LoginUserResponse);
+  rpc GetAllUsers (GetAllUsersRequest) returns (GetAllUsersResponse); // <-- добавили
+}
+
+message RegisterUserRequest {
+  string username = 1;
+  string email = 2;
+  string password = 3;
+}
+
+message RegisterUserResponse {
+  string user_id = 1;
+}
+
+message LoginUserRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message LoginUserResponse {
+  string token = 1;
+}
+
+message GetAllUsersRequest {}
+
+message User {
+  string id = 1;
+  string username = 2;
+  string email = 3;
+  int64 created_at = 4;
+}
+
+message GetAllUsersResponse {
+  repeated User users = 1;
+}
