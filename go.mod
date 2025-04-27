@@ -4,6 +4,7 @@ go 1.23.4
 
 require (
 	github.com/gorilla/mux v1.8.1
+	github.com/streadway/amqp v1.1.0
 	go.mongodb.org/mongo-driver v1.17.3
 	golang.org/x/crypto v0.33.0
 	google.golang.org/grpc v1.72.0

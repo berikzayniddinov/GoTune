@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"gotune/events"
 	"gotune/order/internal/entity"
 	"gotune/order/internal/repository"
 	"gotune/order/proto"
@@ -12,13 +13,18 @@ import (
 )
 
 type OrderService struct {
-	repo       repository.OrderRepository
-	userClient usersproto.UserServiceClient
+	repo           repository.OrderRepository
+	userClient     usersproto.UserServiceClient
+	eventPublisher *events.EventPublisher
 	proto.UnimplementedOrderServiceServer
 }
 
-func NewOrderService(repo repository.OrderRepository, userClient usersproto.UserServiceClient) *OrderService {
-	return &OrderService{repo: repo, userClient: userClient}
+func NewOrderService(repo repository.OrderRepository, userClient usersproto.UserServiceClient, publisher *events.EventPublisher) *OrderService {
+	return &OrderService{
+		repo:           repo,
+		userClient:     userClient,
+		eventPublisher: publisher,
+	}
 }
 
 func (s *OrderService) CreateOrder(ctx context.Context, req *proto.CreateOrderRequest) (*proto.CreateOrderResponse, error) {
@@ -49,6 +55,11 @@ func (s *OrderService) CreateOrder(ctx context.Context, req *proto.CreateOrderRe
 	if err != nil {
 		return nil, err
 	}
+
+	_ = s.eventPublisher.Publish("order_created", map[string]string{
+		"order_id": id.Hex(),
+		"user_id":  req.UserId,
+	})
 
 	return &proto.CreateOrderResponse{
 		OrderId: id.Hex(),

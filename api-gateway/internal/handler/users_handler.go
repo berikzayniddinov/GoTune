@@ -3,6 +3,8 @@ package handler
 import (
 	"context"
 	"encoding/json"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"gotune/users/proto"
 	"net/http"
 )
@@ -34,6 +36,16 @@ func (h *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 		Password: req.Password,
 	})
 	if err != nil {
+		if st, ok := status.FromError(err); ok {
+			switch st.Code() {
+			case codes.AlreadyExists:
+				http.Error(w, "Email уже зарегистрирован", http.StatusConflict)
+				return
+			default:
+				http.Error(w, "Ошибка при регистрации", http.StatusInternalServerError)
+				return
+			}
+		}
 		http.Error(w, "Ошибка при регистрации", http.StatusInternalServerError)
 		return
 	}

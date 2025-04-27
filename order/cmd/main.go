@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"gotune/events"
 	"log"
 	"net"
 
@@ -30,8 +31,9 @@ func main() {
 	}()
 
 	db := mongoClient.Database(dbName)
-	orderRepo := repository.NewOrderRepository(db)
 
+	orderRepo := repository.NewOrderRepository(db)
+	eventPublisher := events.NewEventPublish("amqp://guest:guest@localhost:5672/")
 	userConn, err := grpc.Dial(userServiceAddress, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("Не удалось подключиться к UserService: %v", err)
@@ -40,7 +42,7 @@ func main() {
 
 	userClient := usersproto.NewUserServiceClient(userConn)
 
-	orderService := service.NewOrderService(orderRepo, userClient)
+	orderService := service.NewOrderService(orderRepo, userClient, eventPublisher)
 
 	grpcServer := grpc.NewServer()
 

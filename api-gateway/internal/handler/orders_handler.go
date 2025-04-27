@@ -13,7 +13,7 @@ type OrderHandler struct {
 	UserClient  usersproto.UserServiceClient
 }
 
-func NewOrderHandler(orderClient proto.OrderServiceClient, userClient usersproto.UserServiceClient) *OrderHandler {
+func NewOrderHandle(orderClient proto.OrderServiceClient, userClient usersproto.UserServiceClient) *OrderHandler {
 	return &OrderHandler{
 		OrderClient: orderClient,
 		UserClient:  userClient,
@@ -35,7 +35,6 @@ func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Проверка пользователя
 	_, err := h.UserClient.GetUser(context.Background(), &usersproto.GetUserRequest{UserId: req.UserID})
 	if err != nil {
 		http.Error(w, "Пользователь не найден", http.StatusUnauthorized)

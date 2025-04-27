@@ -3,6 +3,9 @@ package service
 import (
 	"context"
 	"fmt"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+	"gotune/events"
 	"gotune/users/internal/entity"
 	"gotune/users/internal/repository"
 	"gotune/users/pkg/hash"
@@ -10,15 +13,24 @@ import (
 )
 
 type UserService struct {
-	repo repository.UserRepository
+	repo           repository.UserRepository
+	eventPublisher *events.EventPublisher
 	proto.UnimplementedUserServiceServer
 }
 
-func NewUserService(repo repository.UserRepository) *UserService {
-	return &UserService{repo: repo}
+func NewUserService(repo repository.UserRepository, eventPublisher *events.EventPublisher) *UserService {
+	return &UserService{
+		repo:           repo,
+		eventPublisher: eventPublisher,
+	}
 }
 
 func (s *UserService) RegisterUser(ctx context.Context, req *proto.RegisterUserRequest) (*proto.RegisterUserResponse, error) {
+	_, err := s.repo.FindByEmail(ctx, req.Email)
+	if err == nil {
+		return nil, status.Errorf(codes.AlreadyExists, "Email уже зарегистрирован")
+	}
+
 	hashedPassword, err := hash.HashPassword(req.Password)
 	if err != nil {
 		return nil, err
@@ -34,10 +46,16 @@ func (s *UserService) RegisterUser(ctx context.Context, req *proto.RegisterUserR
 		return nil, err
 	}
 
+	_ = s.eventPublisher.Publish("user_registered", map[string]string{
+		"user_id": user.ID.Hex(),
+		"email":   user.Email,
+	})
+
 	return &proto.RegisterUserResponse{
 		UserId: user.ID.Hex(),
 	}, nil
 }
+
 func (s *UserService) LoginUser(ctx context.Context, req *proto.LoginUserRequest) (*proto.LoginUserResponse, error) {
 	user, err := s.repo.FindByEmail(ctx, req.Email)
 	if err != nil {

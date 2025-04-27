@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"google.golang.org/grpc/reflection"
+	"gotune/events"
 	"log"
 	"net"
 
@@ -29,7 +30,8 @@ func main() {
 
 	db := mongoClient.Database(dbName)
 	userRepo := repository.NewUserRepository(db)
-	userService := service.NewUserService(userRepo)
+	eventPublisher := events.NewEventPublish("amqp://guest:guest@localhost:5672/")
+	userService := service.NewUserService(userRepo, eventPublisher)
 
 	grpcServer := grpc.NewServer()
 

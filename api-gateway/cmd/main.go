@@ -18,8 +18,8 @@ func main() {
 	cartClient := client.NewCartServiceClient("localhost:50053")
 	cartHandler := handler.NewCartHandler(cartClient)
 
-	orderClient := client.NewOrderServiceClient("localhost:50054")
-	orderHandler := handler.NewOrderHandler(orderClient, userClient)
+	orderClient := client.NewOrderServiceClien("localhost:50054")
+	orderHandler := handler.NewOrderHandle(orderClient, userClient)
 
 	r := mux.NewRouter()
 

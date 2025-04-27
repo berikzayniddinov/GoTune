@@ -6,7 +6,7 @@ import (
 	"log"
 )
 
-func NewOrderServiceClient(connStr string) proto.OrderServiceClient {
+func NewOrderServiceClien(connStr string) proto.OrderServiceClient {
 	conn, err := grpc.Dial(connStr, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("Не удалось подключиться к OrderService: %v", err)
