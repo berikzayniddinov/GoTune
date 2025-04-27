@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package instruments;
+
+option go_package = "gotune/instruments/proto;instrumentspb";
+
+service InstrumentService {
+  rpc CreateInstrument (CreateInstrumentRequest) returns (CreateInstrumentResponse);
+  rpc GetAllInstruments (GetAllInstrumentsRequest) returns (GetAllInstrumentsResponse);
+  rpc DeleteInstrumentByID (DeleteInstrumentByIDRequest) returns (DeleteInstrumentByIDResponse);
+  rpc UpdateInstrumentByID (UpdateInstrumentByIDRequest) returns (UpdateInstrumentByIDResponse);
+}
+
+message CreateInstrumentRequest {
+  string name = 1;
+  string description = 2;
+  double price = 3;
+}
+
+message CreateInstrumentResponse {
+  string id = 1;
+}
+
+message GetAllInstrumentsRequest {}
+
+message Instrument {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  double price = 4;
+}
+
+message GetAllInstrumentsResponse {
+  repeated Instrument instruments = 1;
+}
+
+message DeleteInstrumentByIDRequest {
+  string id = 1;
+}
+
+message DeleteInstrumentByIDResponse {
+  bool success = 1;
+}
+
+message UpdateInstrumentByIDRequest {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  double price = 4;
+}
+
+message UpdateInstrumentByIDResponse {
+  bool success = 1;
+}

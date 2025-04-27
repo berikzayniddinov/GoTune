@@ -4,7 +4,22 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="93decae8-afc0-4096-b94e-f8d18597fa33" name="Changes" comment="." />
+    <list default="true" id="93decae8-afc0-4096-b94e-f8d18597fa33" name="Changes" comment="инструмент сервис готов">
+      <change afterPath="$PROJECT_DIR$/api-gateway/internal/client/grpc_users_client.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api-gateway/internal/handler/instruments_handler.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/instruments/cmd/main.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/instruments/internal/config/mongo.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/instruments/internal/entity/instrument.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/instruments/internal/repository/instrument_mongo.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/instruments/internal/service/instrument_service.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/instruments/proto/instruments.pb.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/instruments/proto/instruments_grpc.pb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api-gateway/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/cmd/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/proto/instruments.proto" beforeDir="false" afterPath="$PROJECT_DIR$/proto/instruments.proto" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -37,6 +52,9 @@
   <component name="KubernetesApiProvider">{
   &quot;isMigrated&quot;: true
 }</component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 4
 }</component>
@@ -45,37 +63,38 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;DefaultGoTemplateProperty&quot;: &quot;Go File&quot;,
-    &quot;Go Build.go build github.com/berik/GoTune/main.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.go.formatter.settings.were.checked&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.go.migrated.go.modules.settings&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.go.modules.go.list.on.any.changes.was.set&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
-    &quot;go.sdk.automatically.set&quot;: &quot;true&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/berik/GolandProjects/microservices-project&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "DefaultGoTemplateProperty": "Go File",
+    "Go Build.go build github.com/berik/GoTune/main.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.go.formatter.settings.were.checked": "true",
+    "RunOnceActivity.go.migrated.go.modules.settings": "true",
+    "RunOnceActivity.go.modules.go.list.on.any.changes.was.set": "true",
+    "git-widget-placeholder": "main",
+    "go.import.settings.migrated": "true",
+    "go.sdk.automatically.set": "true",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/Users/berik/GolandProjects/microservices-project",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;postgresql&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "postgresql",
+      "mongo"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\berik\GolandProjects\GoTune\instruments\proto" />
       <recent name="C:\Users\berik\GolandProjects\GoTune\users\proto" />
       <recent name="C:\Users\berik\GolandProjects\GoTune\api-gateway\cmd" />
       <recent name="C:\Users\berik\GolandProjects\GoTune\Internal" />
       <recent name="C:\Users\berik\GolandProjects\GoTune\Internal\Services" />
-      <recent name="C:\Users\berik\GolandProjects\GoTune\Application" />
     </key>
   </component>
   <component name="RunManager">
@@ -123,7 +142,9 @@
     <MESSAGE value="README.md change" />
     <MESSAGE value="adding classes" />
     <MESSAGE value="." />
-    <option name="LAST_COMMIT_MESSAGE" value="." />
+    <MESSAGE value="юзер сервис готов" />
+    <MESSAGE value="инструмент сервис готов" />
+    <option name="LAST_COMMIT_MESSAGE" value="инструмент сервис готов" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
