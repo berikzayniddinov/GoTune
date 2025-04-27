@@ -20,7 +20,7 @@ const (
 )
 
 func main() {
-	mongoClient := config.ConnectMongo(mongoURI)
+	mongoClient := config.ConnectMon(mongoURI)
 	defer func() {
 		if err := mongoClient.Disconnect(context.Background()); err != nil {
 			log.Printf("Ошибка отключения MongoDB: %v", err)
