@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package order;
+
+option go_package = "gotune/order/proto;orderpb";
+
+service OrderService {
+  rpc CreateOrder (CreateOrderRequest) returns (CreateOrderResponse);
+  rpc GetOrders (GetOrdersRequest) returns (GetOrdersResponse);
+  rpc DeleteOrder (DeleteOrderRequest) returns (DeleteOrderResponse);
+}
+
+message CreateOrderRequest {
+  string user_id = 1;
+  repeated OrderItem items = 2;
+}
+
+message CreateOrderResponse {
+  string order_id = 1;
+}
+
+message OrderItem {
+  string instrument_id = 1;
+  int32 quantity = 2;
+}
+
+message GetOrdersRequest {
+  string user_id = 1;
+}
+
+message GetOrdersResponse {
+  repeated Order orders = 1;
+}
+
+message Order {
+  string order_id = 1;
+  repeated OrderItem items = 2;
+  int64 created_at = 3;
+}
+
+message DeleteOrderRequest {
+  string order_id = 1;
+  string user_id = 2;
+}
+
+message DeleteOrderResponse {
+  bool success = 1;
+}

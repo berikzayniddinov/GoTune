@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
 
 	"gotune/users/internal/entity"
@@ -14,6 +15,7 @@ type UserRepository interface {
 	Create(ctx context.Context, user *entity.User) error
 	FindByEmail(ctx context.Context, email string) (*entity.User, error)
 	GetAll(ctx context.Context) ([]entity.User, error)
+	FindByID(ctx context.Context, id string) (*entity.User, error)
 }
 
 type userRepository struct {
@@ -61,4 +63,18 @@ func (r *userRepository) GetAll(ctx context.Context) ([]entity.User, error) {
 	}
 
 	return users, nil
+}
+func (r *userRepository) FindByID(ctx context.Context, id string) (*entity.User, error) {
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+
+	var user entity.User
+	err = r.collection.FindOne(ctx, bson.M{"_id": objID}).Decode(&user)
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
 }

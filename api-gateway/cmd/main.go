@@ -18,10 +18,14 @@ func main() {
 	cartClient := client.NewCartServiceClient("localhost:50053")
 	cartHandler := handler.NewCartHandler(cartClient)
 
+	orderClient := client.NewOrderServiceClient("localhost:50054")
+	orderHandler := handler.NewOrderHandler(orderClient, userClient)
+
 	r := mux.NewRouter()
 
 	r.HandleFunc("/register", userHandler.Register).Methods("POST")
 	r.HandleFunc("/login", userHandler.Login).Methods("POST")
+	r.HandleFunc("/users", userHandler.GetAllUsers).Methods("GET")
 
 	r.HandleFunc("/instruments", instrumentHandler.CreateInstrument).Methods("POST")
 	r.HandleFunc("/instruments", instrumentHandler.GetAllInstruments).Methods("GET")
@@ -32,6 +36,10 @@ func main() {
 	r.HandleFunc("/cart/get", cartHandler.GetCart).Methods("GET")
 	r.HandleFunc("/cart/remove", cartHandler.RemoveFromCart).Methods("POST")
 	r.HandleFunc("/cart/clear", cartHandler.ClearCart).Methods("POST")
+
+	r.HandleFunc("/orders", orderHandler.CreateOrder).Methods("POST")
+	r.HandleFunc("/orders", orderHandler.GetOrders).Methods("GET")
+	r.HandleFunc("/orders", orderHandler.DeleteOrder).Methods("DELETE")
 
 	log.Println("API Gateway запущен на порту 8080")
 	if err := http.ListenAndServe(":8080", r); err != nil {

@@ -7,7 +7,8 @@ option go_package = "gotune/users/proto;userspb";
 service UserService {
   rpc RegisterUser (RegisterUserRequest) returns (RegisterUserResponse);
   rpc LoginUser (LoginUserRequest) returns (LoginUserResponse);
-  rpc GetAllUsers (GetAllUsersRequest) returns (GetAllUsersResponse); // <-- добавили
+  rpc GetAllUsers (GetAllUsersRequest) returns (GetAllUsersResponse);
+  rpc GetUser (GetUserRequest) returns (GetUserResponse);// <-- добавили
 }
 
 message RegisterUserRequest {
@@ -40,4 +41,14 @@ message User {
 
 message GetAllUsersResponse {
   repeated User users = 1;
+}
+
+message GetUserRequest {
+  string user_id = 1;
+}
+
+message GetUserResponse {
+  string user_id = 1;
+  string username = 2;
+  string email = 3;
 }

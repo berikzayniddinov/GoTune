@@ -74,3 +74,15 @@ func (s *UserService) GetAllUsers(ctx context.Context, req *proto.GetAllUsersReq
 		Users: protoUsers,
 	}, nil
 }
+func (s *UserService) GetUser(ctx context.Context, req *proto.GetUserRequest) (*proto.GetUserResponse, error) {
+	user, err := s.repo.FindByID(ctx, req.UserId)
+	if err != nil {
+		return nil, err
+	}
+
+	return &proto.GetUserResponse{
+		UserId:   user.ID.Hex(),
+		Username: user.Username,
+		Email:    user.Email,
+	}, nil
+}
