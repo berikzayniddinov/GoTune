@@ -21,7 +21,7 @@ func main() {
 	}
 	defer ch.Close()
 
-	queues := []string{"user_registered", "order_created"}
+	queues := []string{"user_registered", "order_created", "instrument_created"}
 
 	for _, queue := range queues {
 		_, err := ch.QueueDeclare(
@@ -57,6 +57,16 @@ func main() {
 		nil,
 	)
 
+	msgsUser, _ = ch.Consume(
+		"instrument_created",
+		"",
+		true,  // auto-ack
+		false, // exclusive
+		false, // no-local
+		false, // no-wait
+		nil,
+	)
+
 	forever := make(chan bool)
 
 	go func() {
@@ -72,6 +82,14 @@ func main() {
 			var data map[string]string
 			_ = json.Unmarshal(d.Body, &data)
 			fmt.Printf("[OrderCreated] Новый заказ: OrderID = %s, UserID = %s\n", data["order_id"], data["user_id"])
+		}
+	}()
+
+	go func() {
+		for d := range msgsOrder {
+			var data map[string]string
+			_ = json.Unmarshal(d.Body, &data)
+			fmt.Printf("[Instrument_created] Новый инструмент: InstrumentId = %s", data["instrument_id"])
 		}
 	}()
 
