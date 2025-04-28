@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"gotune/events"
 	"log"
 	"net"
 
@@ -29,7 +30,8 @@ func main() {
 
 	db := mongoClient.Database(dbName)
 	cartRepo := repository.NewCartRepositories(db)
-	cartService := service.NewCartService(cartRepo)
+	eventPublisher := events.NewEventPublish("amqp://guest:guest@localhost:5672/")
+	cartService := service.NewCartService(cartRepo, eventPublisher)
 
 	grpcServer := grpc.NewServer()
 

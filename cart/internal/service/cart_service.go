@@ -14,8 +14,8 @@ type CartService struct {
 	eventPublisher *events.EventPublisher
 }
 
-func NewCartService(repo repository.CartRepository, publusher *events.EventPublisher) *CartService {
-	return &CartService{repo: repo, eventPublisher: publusher}
+func NewCartService(repo repository.CartRepository, publisher *events.EventPublisher) *CartService {
+	return &CartService{repo: repo, eventPublisher: publisher}
 }
 
 func (s *CartService) AddToCart(ctx context.Context, req *proto.AddToCartRequest) (*proto.AddToCartResponse, error) {
