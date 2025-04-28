@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"gotune/events"
 	"gotune/instruments/internal/entity"
 	"gotune/instruments/internal/repository"
 	"gotune/instruments/proto"
@@ -11,10 +12,11 @@ import (
 type InstrumentService struct {
 	repo repository.InstrumentRepository
 	proto.UnimplementedInstrumentServiceServer
+	eventPublisher *events.EventPublisher
 }
 
-func NewInstrumentService(repo repository.InstrumentRepository) *InstrumentService {
-	return &InstrumentService{repo: repo}
+func NewInstrumentService(repo repository.InstrumentRepository, publisher *events.EventPublisher) *InstrumentService {
+	return &InstrumentService{repo: repo, eventPublisher: publisher}
 }
 
 func (s *InstrumentService) CreateInstrument(ctx context.Context, req *proto.CreateInstrumentRequest) (*proto.CreateInstrumentResponse, error) {
@@ -27,6 +29,9 @@ func (s *InstrumentService) CreateInstrument(ctx context.Context, req *proto.Cre
 	if err != nil {
 		return nil, err
 	}
+	_ = s.eventPublisher.Publish("instrument_created", map[string]string{
+		"id": id.Hex(),
+	})
 	return &proto.CreateInstrumentResponse{
 		Id: id.Hex(),
 	}, nil

@@ -5,15 +5,17 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"gotune/cart/internal/repository"
 	"gotune/cart/proto"
+	"gotune/events"
 )
 
 type CartService struct {
 	repo repository.CartRepository
 	proto.UnimplementedCartServiceServer
+	eventPublisher *events.EventPublisher
 }
 
-func NewCartService(repo repository.CartRepository) *CartService {
-	return &CartService{repo: repo}
+func NewCartService(repo repository.CartRepository, publusher *events.EventPublisher) *CartService {
+	return &CartService{repo: repo, eventPublisher: publusher}
 }
 
 func (s *CartService) AddToCart(ctx context.Context, req *proto.AddToCartRequest) (*proto.AddToCartResponse, error) {
@@ -29,6 +31,11 @@ func (s *CartService) AddToCart(ctx context.Context, req *proto.AddToCartRequest
 	if err := s.repo.AddToCart(ctx, userID, instrumentID, req.Quantity); err != nil {
 		return nil, err
 	}
+
+	_ = s.eventPublisher.Publish("cart_updated", map[string]string{
+		"user_id":       req.UserId,
+		"instrument_id": req.InstrumentId,
+	})
 
 	return &proto.AddToCartResponse{Success: true}, nil
 }
