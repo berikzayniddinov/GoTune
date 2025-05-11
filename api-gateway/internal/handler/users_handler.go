@@ -182,3 +182,14 @@ func (h *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 		"success": resp.Success,
 	})
 }
+func (h *UserHandler) DeleteAllUsersCache(w http.ResponseWriter, r *http.Request) {
+	resp, err := h.UserClient.DeleteAllUsersCache(context.Background(), &proto.DeleteAllUsersCacheRequest{})
+	if err != nil {
+		http.Error(w, "Ошибка при очистке кеша", http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(map[string]bool{
+		"success": resp.Success,
+	})
+}

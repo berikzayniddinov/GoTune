@@ -179,9 +179,15 @@ func (s *UserService) UpdateUser(ctx context.Context, req *proto.UpdateUserReque
 		return nil, err
 	}
 
-	s.invalidateUserCache(ctx, req.UserId)
+	resp := &proto.GetUserResponse{
+		UserId:   user.ID.Hex(),
+		Username: user.Username,
+		Email:    user.Email,
+	}
+	data, _ := json.Marshal(resp)
+	s.cache.Set(ctx, userCacheKeyPrefix+req.UserId, data, userCacheExpiration)
 
-	s.cache.Del(ctx, allUsersCacheKey)
+	//s.cache.Del(ctx, allUsersCacheKey)
 
 	_ = s.eventPublisher.Publish("user_updated", map[string]string{
 		"user_id": user.ID.Hex(),
@@ -205,7 +211,7 @@ func (s *UserService) DeleteUser(ctx context.Context, req *proto.DeleteUserReque
 
 	s.invalidateUserCache(ctx, req.UserId)
 
-	s.cache.Del(ctx, allUsersCacheKey)
+	//s.cache.Del(ctx, allUsersCacheKey)
 
 	_ = s.eventPublisher.Publish("user_deleted", map[string]string{
 		"user_id": req.UserId,
@@ -217,6 +223,24 @@ func (s *UserService) DeleteUser(ctx context.Context, req *proto.DeleteUserReque
 	}, nil
 }
 
+func (s *UserService) DeleteAllUsersCache(ctx context.Context, req *proto.DeleteAllUsersCacheRequest) (*proto.DeleteAllUsersCacheResponse, error) {
+	keys, err := s.cache.Keys(ctx, userCacheKeyPrefix+"*").Result()
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "Failed to get cache keys: %v", err)
+	}
+
+	keys = append(keys, allUsersCacheKey)
+
+	if len(keys) > 0 {
+		if err := s.cache.Del(ctx, keys...).Err(); err != nil {
+			return nil, status.Errorf(codes.Internal, "Failed to delete cache: %v", err)
+		}
+	}
+
+	return &proto.DeleteAllUsersCacheResponse{
+		Success: true,
+	}, nil
+}
 func (s *UserService) invalidateUserCache(ctx context.Context, userId string) {
 	cacheKey := userCacheKeyPrefix + userId
 	s.cache.Del(ctx, cacheKey)

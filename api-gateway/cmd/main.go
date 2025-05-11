@@ -30,6 +30,7 @@ func main() {
 	r.HandleFunc("/users/{id}", userHandler.GetUser).Methods("GET")
 	r.HandleFunc("/users/{id}", userHandler.UpdateUser).Methods("PUT")
 	r.HandleFunc("/users/{id}", userHandler.DeleteUser).Methods("DELETE")
+	r.HandleFunc("/users/cache/clear", userHandler.DeleteAllUsersCache).Methods("DELETE")
 
 	// Instrument routes
 	r.HandleFunc("/instruments", instrumentHandler.CreateInstrument).Methods("POST")

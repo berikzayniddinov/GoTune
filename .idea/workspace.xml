@@ -5,16 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="93decae8-afc0-4096-b94e-f8d18597fa33" name="Changes" comment="проект полностью готов">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/c74b7847-346a-430a-bd3b-0e2e9e841a77.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/c74b7847-346a-430a-bd3b-0e2e9e841a77.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/07dd3e44-868f-4988-bac3-f99c3a9ee974.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/07dd3e44-868f-4988-bac3-f99c3a9ee974.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/api-gateway/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/cmd/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/api-gateway/internal/handler/users_handler.go" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/internal/handler/users_handler.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dump.rdb" beforeDir="false" afterPath="$PROJECT_DIR$/dump.rdb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/proto/users.proto" beforeDir="false" afterPath="$PROJECT_DIR$/proto/users.proto" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/users/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/users/cmd/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/users/internal/repository/user_mongo.go" beforeDir="false" afterPath="$PROJECT_DIR$/users/internal/repository/user_mongo.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/users/internal/service/user_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/users/internal/service/user_service.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/users/proto/users.pb.go" beforeDir="false" />

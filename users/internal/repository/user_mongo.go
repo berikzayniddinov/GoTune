@@ -16,6 +16,7 @@ type UserRepository interface {
 	FindByID(ctx context.Context, id string) (*entity.User, error)
 	Update(ctx context.Context, user *entity.User) error
 	Delete(ctx context.Context, id string) error
+	DeleteAll(ctx context.Context) error // Новый метод
 }
 
 type userRepository struct {
@@ -105,5 +106,9 @@ func (r *userRepository) Delete(ctx context.Context, id string) error {
 	}
 
 	_, err = r.collection.DeleteOne(ctx, bson.M{"_id": objID})
+	return err
+}
+func (r *userRepository) DeleteAll(ctx context.Context) error {
+	_, err := r.collection.DeleteMany(ctx, bson.M{})
 	return err
 }
