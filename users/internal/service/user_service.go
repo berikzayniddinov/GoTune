@@ -2,7 +2,9 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"github.com/redis/go-redis/v9"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"gotune/events"
@@ -10,18 +12,28 @@ import (
 	"gotune/users/internal/repository"
 	"gotune/users/pkg/hash"
 	"gotune/users/proto"
+	"time"
+)
+
+const (
+	userCacheKeyPrefix   = "user:"
+	userCacheExpiration  = 30 * time.Minute
+	allUsersCacheKey     = "users:all"
+	allUsersCacheExpTime = 5 * time.Minute
 )
 
 type UserService struct {
 	repo           repository.UserRepository
 	eventPublisher *events.EventPublisher
+	cache          *redis.Client
 	proto.UnimplementedUserServiceServer
 }
 
-func NewUserService(repo repository.UserRepository, eventPublisher *events.EventPublisher) *UserService {
+func NewUserService(repo repository.UserRepository, eventPublisher *events.EventPublisher, cache *redis.Client) *UserService {
 	return &UserService{
 		repo:           repo,
 		eventPublisher: eventPublisher,
+		cache:          cache,
 	}
 }
 
@@ -45,6 +57,10 @@ func (s *UserService) RegisterUser(ctx context.Context, req *proto.RegisterUserR
 	if err := s.repo.Create(ctx, user); err != nil {
 		return nil, err
 	}
+
+	//s.invalidateUserCache(ctx, user.ID.Hex())
+
+	//s.cache.Del(ctx, allUsersCacheKey)
 
 	_ = s.eventPublisher.Publish("user_registered", map[string]string{
 		"user_id": user.ID.Hex(),
@@ -72,7 +88,16 @@ func (s *UserService) LoginUser(ctx context.Context, req *proto.LoginUserRequest
 		Token: token,
 	}, nil
 }
+
 func (s *UserService) GetAllUsers(ctx context.Context, req *proto.GetAllUsersRequest) (*proto.GetAllUsersResponse, error) {
+	cached, err := s.cache.Get(ctx, allUsersCacheKey).Result()
+	if err == nil {
+		var cachedResp proto.GetAllUsersResponse
+		if err := json.Unmarshal([]byte(cached), &cachedResp); err == nil {
+			return &cachedResp, nil
+		}
+	}
+
 	users, err := s.repo.GetAll(ctx)
 	if err != nil {
 		return nil, err
@@ -88,19 +113,111 @@ func (s *UserService) GetAllUsers(ctx context.Context, req *proto.GetAllUsersReq
 		})
 	}
 
-	return &proto.GetAllUsersResponse{
+	resp := &proto.GetAllUsersResponse{
 		Users: protoUsers,
-	}, nil
+	}
+
+	data, _ := json.Marshal(resp)
+	s.cache.Set(ctx, allUsersCacheKey, data, allUsersCacheExpTime)
+
+	return resp, nil
 }
+
 func (s *UserService) GetUser(ctx context.Context, req *proto.GetUserRequest) (*proto.GetUserResponse, error) {
+	cacheKey := userCacheKeyPrefix + req.UserId
+	cached, err := s.cache.Get(ctx, cacheKey).Result()
+	if err == nil {
+		var cachedResp proto.GetUserResponse
+		if err := json.Unmarshal([]byte(cached), &cachedResp); err == nil {
+			return &cachedResp, nil
+		}
+	}
+
 	user, err := s.repo.FindByID(ctx, req.UserId)
 	if err != nil {
 		return nil, err
 	}
 
-	return &proto.GetUserResponse{
+	resp := &proto.GetUserResponse{
 		UserId:   user.ID.Hex(),
 		Username: user.Username,
 		Email:    user.Email,
+	}
+
+	data, _ := json.Marshal(resp)
+	s.cache.Set(ctx, cacheKey, data, userCacheExpiration)
+
+	return resp, nil
+}
+
+func (s *UserService) UpdateUser(ctx context.Context, req *proto.UpdateUserRequest) (*proto.UpdateUserResponse, error) {
+	user, err := s.repo.FindByID(ctx, req.UserId)
+	if err != nil {
+		return nil, status.Errorf(codes.NotFound, "User not found")
+	}
+	if req.Username != "" {
+		user.Username = req.Username
+	}
+
+	if req.Email != "" {
+		existingUser, err := s.repo.FindByEmail(ctx, req.Email)
+		if err == nil && existingUser.ID.Hex() != req.UserId {
+			return nil, status.Errorf(codes.AlreadyExists, "Email already registered")
+		}
+		user.Email = req.Email
+	}
+
+	if req.Password != "" {
+		hashedPassword, err := hash.HashPassword(req.Password)
+		if err != nil {
+			return nil, err
+		}
+		user.Password = hashedPassword
+	}
+
+	if err := s.repo.Update(ctx, user); err != nil {
+		return nil, err
+	}
+
+	s.invalidateUserCache(ctx, req.UserId)
+
+	s.cache.Del(ctx, allUsersCacheKey)
+
+	_ = s.eventPublisher.Publish("user_updated", map[string]string{
+		"user_id": user.ID.Hex(),
+		"email":   user.Email,
+	})
+
+	return &proto.UpdateUserResponse{
+		Success: true,
 	}, nil
+}
+
+func (s *UserService) DeleteUser(ctx context.Context, req *proto.DeleteUserRequest) (*proto.DeleteUserResponse, error) {
+	user, err := s.repo.FindByID(ctx, req.UserId)
+	if err != nil {
+		return nil, status.Errorf(codes.NotFound, "User not found")
+	}
+
+	if err := s.repo.Delete(ctx, req.UserId); err != nil {
+		return nil, err
+	}
+
+	s.invalidateUserCache(ctx, req.UserId)
+
+	s.cache.Del(ctx, allUsersCacheKey)
+
+	_ = s.eventPublisher.Publish("user_deleted", map[string]string{
+		"user_id": req.UserId,
+		"email":   user.Email,
+	})
+
+	return &proto.DeleteUserResponse{
+		Success: true,
+	}, nil
+}
+
+func (s *UserService) invalidateUserCache(ctx context.Context, userId string) {
+	cacheKey := userCacheKeyPrefix + userId
+	s.cache.Del(ctx, cacheKey)
 }

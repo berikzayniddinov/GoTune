@@ -23,20 +23,27 @@ func main() {
 
 	r := mux.NewRouter()
 
+	// User routes
 	r.HandleFunc("/register", userHandler.Register).Methods("POST")
 	r.HandleFunc("/login", userHandler.Login).Methods("POST")
 	r.HandleFunc("/users", userHandler.GetAllUsers).Methods("GET")
+	r.HandleFunc("/users/{id}", userHandler.GetUser).Methods("GET")
+	r.HandleFunc("/users/{id}", userHandler.UpdateUser).Methods("PUT")
+	r.HandleFunc("/users/{id}", userHandler.DeleteUser).Methods("DELETE")
 
+	// Instrument routes
 	r.HandleFunc("/instruments", instrumentHandler.CreateInstrument).Methods("POST")
 	r.HandleFunc("/instruments", instrumentHandler.GetAllInstruments).Methods("GET")
 	r.HandleFunc("/instruments/{id}", instrumentHandler.DeleteInstrumentByID).Methods("DELETE")
 	r.HandleFunc("/instruments/{id}", instrumentHandler.UpdateInstrumentByID).Methods("PATCH")
 
+	// Cart routes
 	r.HandleFunc("/cart/add", cartHandler.AddToCart).Methods("POST")
 	r.HandleFunc("/cart/get", cartHandler.GetCart).Methods("GET")
 	r.HandleFunc("/cart/remove", cartHandler.RemoveFromCart).Methods("POST")
 	r.HandleFunc("/cart/clear", cartHandler.ClearCart).Methods("POST")
 
+	// Order routes
 	r.HandleFunc("/orders", orderHandler.CreateOrder).Methods("POST")
 	r.HandleFunc("/orders", orderHandler.GetOrders).Methods("GET")
 	r.HandleFunc("/orders", orderHandler.DeleteOrder).Methods("DELETE")
