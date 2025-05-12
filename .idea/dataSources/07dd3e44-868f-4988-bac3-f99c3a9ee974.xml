@@ -22,9 +22,8 @@
     <schema id="15" parent="1" name="7"/>
     <schema id="16" parent="1" name="8"/>
     <schema id="17" parent="1" name="9"/>
-    <collection id="18" parent="2" name="order:user:680e20895b80a71939790d85"/>
-    <collection id="19" parent="2" name="user:680e20895b80a71939790d85"/>
-    <collection id="20" parent="2" name="user:68207c3d481034eec43426e7"/>
-    <collection id="21" parent="2" name="users:all"/>
+    <collection id="18" parent="2" name="user:680e20895b80a71939790d85"/>
+    <collection id="19" parent="2" name="user:68207c3d481034eec43426e7"/>
+    <collection id="20" parent="2" name="users:all"/>
   </database-model>
 </dataSource>
