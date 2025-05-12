@@ -24,6 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type InstrumentServiceClient interface {
 	CreateInstrument(ctx context.Context, in *CreateInstrumentRequest, opts ...grpc.CallOption) (*CreateInstrumentResponse, error)
 	GetAllInstruments(ctx context.Context, in *GetAllInstrumentsRequest, opts ...grpc.CallOption) (*GetAllInstrumentsResponse, error)
+	GetInstrumentByID(ctx context.Context, in *GetInstrumentByIDRequest, opts ...grpc.CallOption) (*Instrument, error)
 	DeleteInstrumentByID(ctx context.Context, in *DeleteInstrumentByIDRequest, opts ...grpc.CallOption) (*DeleteInstrumentByIDResponse, error)
 	UpdateInstrumentByID(ctx context.Context, in *UpdateInstrumentByIDRequest, opts ...grpc.CallOption) (*UpdateInstrumentByIDResponse, error)
 }
@@ -54,6 +55,15 @@ func (c *instrumentServiceClient) GetAllInstruments(ctx context.Context, in *Get
 	return out, nil
 }
 
+func (c *instrumentServiceClient) GetInstrumentByID(ctx context.Context, in *GetInstrumentByIDRequest, opts ...grpc.CallOption) (*Instrument, error) {
+	out := new(Instrument)
+	err := c.cc.Invoke(ctx, "/instruments.InstrumentService/GetInstrumentByID", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *instrumentServiceClient) DeleteInstrumentByID(ctx context.Context, in *DeleteInstrumentByIDRequest, opts ...grpc.CallOption) (*DeleteInstrumentByIDResponse, error) {
 	out := new(DeleteInstrumentByIDResponse)
 	err := c.cc.Invoke(ctx, "/instruments.InstrumentService/DeleteInstrumentByID", in, out, opts...)
@@ -78,6 +88,7 @@ func (c *instrumentServiceClient) UpdateInstrumentByID(ctx context.Context, in *
 type InstrumentServiceServer interface {
 	CreateInstrument(context.Context, *CreateInstrumentRequest) (*CreateInstrumentResponse, error)
 	GetAllInstruments(context.Context, *GetAllInstrumentsRequest) (*GetAllInstrumentsResponse, error)
+	GetInstrumentByID(context.Context, *GetInstrumentByIDRequest) (*Instrument, error)
 	DeleteInstrumentByID(context.Context, *DeleteInstrumentByIDRequest) (*DeleteInstrumentByIDResponse, error)
 	UpdateInstrumentByID(context.Context, *UpdateInstrumentByIDRequest) (*UpdateInstrumentByIDResponse, error)
 	mustEmbedUnimplementedInstrumentServiceServer()
@@ -92,6 +103,9 @@ func (UnimplementedInstrumentServiceServer) CreateInstrument(context.Context, *C
 }
 func (UnimplementedInstrumentServiceServer) GetAllInstruments(context.Context, *GetAllInstrumentsRequest) (*GetAllInstrumentsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllInstruments not implemented")
+}
+func (UnimplementedInstrumentServiceServer) GetInstrumentByID(context.Context, *GetInstrumentByIDRequest) (*Instrument, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetInstrumentByID not implemented")
 }
 func (UnimplementedInstrumentServiceServer) DeleteInstrumentByID(context.Context, *DeleteInstrumentByIDRequest) (*DeleteInstrumentByIDResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteInstrumentByID not implemented")
@@ -148,6 +162,24 @@ func _InstrumentService_GetAllInstruments_Handler(srv interface{}, ctx context.C
 	return interceptor(ctx, in, info, handler)
 }
 
+func _InstrumentService_GetInstrumentByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetInstrumentByIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InstrumentServiceServer).GetInstrumentByID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/instruments.InstrumentService/GetInstrumentByID",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InstrumentServiceServer).GetInstrumentByID(ctx, req.(*GetInstrumentByIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _InstrumentService_DeleteInstrumentByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeleteInstrumentByIDRequest)
 	if err := dec(in); err != nil {
@@ -198,6 +230,10 @@ var InstrumentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAllInstruments",
 			Handler:    _InstrumentService_GetAllInstruments_Handler,
+		},
+		{
+			MethodName: "GetInstrumentByID",
+			Handler:    _InstrumentService_GetInstrumentByID_Handler,
 		},
 		{
 			MethodName: "DeleteInstrumentByID",

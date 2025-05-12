@@ -54,6 +54,20 @@ func (h *InstrumentHandler) GetAllInstruments(w http.ResponseWriter, r *http.Req
 	json.NewEncoder(w).Encode(resp.Instruments)
 }
 
+func (h *InstrumentHandler) GetInstrumentByID(w http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["id"]
+
+	resp, err := h.InstrumentClient.GetInstrumentByID(context.Background(), &proto.GetInstrumentByIDRequest{
+		Id: id,
+	})
+	if err != nil {
+		http.Error(w, "Инструмент не найден", http.StatusNotFound)
+		return
+	}
+
+	json.NewEncoder(w).Encode(resp)
+}
+
 func (h *InstrumentHandler) DeleteInstrumentByID(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
@@ -71,9 +85,9 @@ func (h *InstrumentHandler) DeleteInstrumentByID(w http.ResponseWriter, r *http.
 }
 
 type UpdateInstrumentRequest struct {
-	Name        string  `json:"name"`
-	Description string  `json:"description"`
-	Price       float64 `json:"price"`
+	Name        string  `json:"name,omitempty"`
+	Description string  `json:"description,omitempty"`
+	Price       float64 `json:"price,omitempty"`
 }
 
 func (h *InstrumentHandler) UpdateInstrumentByID(w http.ResponseWriter, r *http.Request) {
@@ -99,4 +113,9 @@ func (h *InstrumentHandler) UpdateInstrumentByID(w http.ResponseWriter, r *http.
 	json.NewEncoder(w).Encode(map[string]bool{
 		"success": true,
 	})
+}
+
+func (h *InstrumentHandler) ClearInstrumentCache(w http.ResponseWriter, r *http.Request) {
+	// This could be a method added to the service to clear entire cache
+	http.Error(w, "Not implemented", http.StatusNotImplemented)
 }

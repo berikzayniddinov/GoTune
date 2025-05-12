@@ -35,8 +35,10 @@ func main() {
 	// Instrument routes
 	r.HandleFunc("/instruments", instrumentHandler.CreateInstrument).Methods("POST")
 	r.HandleFunc("/instruments", instrumentHandler.GetAllInstruments).Methods("GET")
+	r.HandleFunc("/instruments/{id}", instrumentHandler.GetInstrumentByID).Methods("GET")
+	r.HandleFunc("/instruments/{id}", instrumentHandler.UpdateInstrumentByID).Methods("PUT")
 	r.HandleFunc("/instruments/{id}", instrumentHandler.DeleteInstrumentByID).Methods("DELETE")
-	r.HandleFunc("/instruments/{id}", instrumentHandler.UpdateInstrumentByID).Methods("PATCH")
+	r.HandleFunc("/instruments/cache/clear", instrumentHandler.ClearInstrumentCache).Methods("DELETE")
 
 	// Cart routes
 	r.HandleFunc("/cart/add", cartHandler.AddToCart).Methods("POST")
@@ -49,8 +51,8 @@ func main() {
 	r.HandleFunc("/orders", orderHandler.GetOrders).Methods("GET")
 	r.HandleFunc("/orders", orderHandler.DeleteOrder).Methods("DELETE")
 
-	log.Println("API Gateway запущен на порту 8080")
-	if err := http.ListenAndServe(":8080", r); err != nil {
+	log.Println("API Gateway запущен на порту 8081")
+	if err := http.ListenAndServe(":8081", r); err != nil {
 		log.Fatalf("Ошибка запуска API Gateway: %v", err)
 	}
 }

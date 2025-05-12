@@ -2,16 +2,16 @@ package repository
 
 import (
 	"context"
-	"gotune/instruments/internal/entity"
-
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"gotune/instruments/internal/entity"
 )
 
 type InstrumentRepository interface {
 	Create(ctx context.Context, instrument *entity.Instrument) (primitive.ObjectID, error)
 	GetAll(ctx context.Context) ([]entity.Instrument, error)
+	FindByID(ctx context.Context, id primitive.ObjectID) (*entity.Instrument, error)
 	DeleteByID(ctx context.Context, id primitive.ObjectID) error
 	UpdateByID(ctx context.Context, id primitive.ObjectID, instrument *entity.Instrument) error
 }
@@ -54,6 +54,15 @@ func (r *instrumentRepository) GetAll(ctx context.Context) ([]entity.Instrument,
 	}
 
 	return instruments, nil
+}
+
+func (r *instrumentRepository) FindByID(ctx context.Context, id primitive.ObjectID) (*entity.Instrument, error) {
+	var instrument entity.Instrument
+	err := r.collection.FindOne(ctx, bson.M{"_id": id}).Decode(&instrument)
+	if err != nil {
+		return nil, err
+	}
+	return &instrument, nil
 }
 
 func (r *instrumentRepository) DeleteByID(ctx context.Context, id primitive.ObjectID) error {

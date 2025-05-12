@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"github.com/redis/go-redis/v9"
 	"gotune/events"
 	"log"
 	"net"
@@ -30,8 +31,16 @@ func main() {
 
 	db := mongoClient.Database(dbName)
 	instrumentRepo := repository.NewInstrumentRepositories(db)
+	rdb := redis.NewClient(&redis.Options{
+		Addr: "localhost:6379", // или поменяй порт, если другой
+	})
+	defer func() {
+		if err := rdb.Close(); err != nil {
+			log.Printf("Ошибка закрытия Redis: %v", err)
+		}
+	}()
 	eventPublisher := events.NewEventPublish("amqp://guest:guest@localhost:5672/")
-	instrumentService := service.NewInstrumentService(instrumentRepo, eventPublisher)
+	instrumentService := service.NewInstrumentService(instrumentRepo, eventPublisher, rdb)
 
 	grpcServer := grpc.NewServer()
 

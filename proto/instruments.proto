@@ -7,6 +7,7 @@ option go_package = "gotune/instruments/proto;instrumentspb";
 service InstrumentService {
   rpc CreateInstrument (CreateInstrumentRequest) returns (CreateInstrumentResponse);
   rpc GetAllInstruments (GetAllInstrumentsRequest) returns (GetAllInstrumentsResponse);
+  rpc GetInstrumentByID (GetInstrumentByIDRequest) returns (Instrument); 
   rpc DeleteInstrumentByID (DeleteInstrumentByIDRequest) returns (DeleteInstrumentByIDResponse);
   rpc UpdateInstrumentByID (UpdateInstrumentByIDRequest) returns (UpdateInstrumentByIDResponse);
 }
@@ -22,6 +23,10 @@ message CreateInstrumentResponse {
 }
 
 message GetAllInstrumentsRequest {}
+
+message GetInstrumentByIDRequest {
+  string id = 1;
+}
 
 message Instrument {
   string id = 1;

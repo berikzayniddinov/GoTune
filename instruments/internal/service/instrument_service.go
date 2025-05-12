@@ -2,6 +2,10 @@ package service
 
 import (
 	"context"
+	"encoding/json"
+	"time"
+
+	"github.com/redis/go-redis/v9"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"gotune/events"
 	"gotune/instruments/internal/entity"
@@ -9,14 +13,26 @@ import (
 	"gotune/instruments/proto"
 )
 
+const (
+	instrumentCacheKeyPrefix   = "instrument:"
+	allInstrumentsCacheKey     = "instruments:all"
+	instrumentCacheExpTime     = 30 * time.Minute
+	allInstrumentsCacheExpTime = 5 * time.Minute
+)
+
 type InstrumentService struct {
-	repo repository.InstrumentRepository
-	proto.UnimplementedInstrumentServiceServer
+	repo           repository.InstrumentRepository
 	eventPublisher *events.EventPublisher
+	cache          *redis.Client
+	proto.UnimplementedInstrumentServiceServer
 }
 
-func NewInstrumentService(repo repository.InstrumentRepository, publisher *events.EventPublisher) *InstrumentService {
-	return &InstrumentService{repo: repo, eventPublisher: publisher}
+func NewInstrumentService(repo repository.InstrumentRepository, publisher *events.EventPublisher, cache *redis.Client) *InstrumentService {
+	return &InstrumentService{
+		repo:           repo,
+		eventPublisher: publisher,
+		cache:          cache,
+	}
 }
 
 func (s *InstrumentService) CreateInstrument(ctx context.Context, req *proto.CreateInstrumentRequest) (*proto.CreateInstrumentResponse, error) {
@@ -29,6 +45,10 @@ func (s *InstrumentService) CreateInstrument(ctx context.Context, req *proto.Cre
 	if err != nil {
 		return nil, err
 	}
+
+	// Invalidate global instruments list cache
+	s.cache.Del(ctx, allInstrumentsCacheKey)
+
 	_ = s.eventPublisher.Publish("instrument_created", map[string]string{
 		"id": id.Hex(),
 	})
@@ -37,7 +57,48 @@ func (s *InstrumentService) CreateInstrument(ctx context.Context, req *proto.Cre
 	}, nil
 }
 
+func (s *InstrumentService) GetInstrumentByID(ctx context.Context, req *proto.GetInstrumentByIDRequest) (*proto.Instrument, error) {
+	cacheKey := instrumentCacheKeyPrefix + req.Id
+	cached, err := s.cache.Get(ctx, cacheKey).Result()
+	if err == nil {
+		var cachedResp proto.Instrument
+		if err := json.Unmarshal([]byte(cached), &cachedResp); err == nil {
+			return &cachedResp, nil
+		}
+	}
+
+	id, err := primitive.ObjectIDFromHex(req.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	inst, err := s.repo.FindByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := &proto.Instrument{
+		Id:          inst.ID.Hex(),
+		Name:        inst.Name,
+		Description: inst.Description,
+		Price:       inst.Price,
+	}
+
+	data, _ := json.Marshal(resp)
+	s.cache.Set(ctx, cacheKey, data, instrumentCacheExpTime)
+
+	return resp, nil
+}
+
 func (s *InstrumentService) GetAllInstruments(ctx context.Context, req *proto.GetAllInstrumentsRequest) (*proto.GetAllInstrumentsResponse, error) {
+	cached, err := s.cache.Get(ctx, allInstrumentsCacheKey).Result()
+	if err == nil {
+		var cachedResp proto.GetAllInstrumentsResponse
+		if err := json.Unmarshal([]byte(cached), &cachedResp); err == nil {
+			return &cachedResp, nil
+		}
+	}
+
 	instruments, err := s.repo.GetAll(ctx)
 	if err != nil {
 		return nil, err
@@ -53,22 +114,14 @@ func (s *InstrumentService) GetAllInstruments(ctx context.Context, req *proto.Ge
 		})
 	}
 
-	return &proto.GetAllInstrumentsResponse{
+	resp := &proto.GetAllInstrumentsResponse{
 		Instruments: protoInstruments,
-	}, nil
-}
-
-func (s *InstrumentService) DeleteInstrumentByID(ctx context.Context, req *proto.DeleteInstrumentByIDRequest) (*proto.DeleteInstrumentByIDResponse, error) {
-	id, err := primitive.ObjectIDFromHex(req.Id)
-	if err != nil {
-		return nil, err
 	}
 
-	if err := s.repo.DeleteByID(ctx, id); err != nil {
-		return nil, err
-	}
+	data, _ := json.Marshal(resp)
+	s.cache.Set(ctx, allInstrumentsCacheKey, data, allInstrumentsCacheExpTime)
 
-	return &proto.DeleteInstrumentByIDResponse{Success: true}, nil
+	return resp, nil
 }
 
 func (s *InstrumentService) UpdateInstrumentByID(ctx context.Context, req *proto.UpdateInstrumentByIDRequest) (*proto.UpdateInstrumentByIDResponse, error) {
@@ -87,5 +140,32 @@ func (s *InstrumentService) UpdateInstrumentByID(ctx context.Context, req *proto
 		return nil, err
 	}
 
+	s.cache.Del(ctx, instrumentCacheKeyPrefix+req.Id)
+	s.cache.Del(ctx, allInstrumentsCacheKey)
+
+	_ = s.eventPublisher.Publish("instrument_updated", map[string]string{
+		"id": req.Id,
+	})
+
 	return &proto.UpdateInstrumentByIDResponse{Success: true}, nil
+}
+
+func (s *InstrumentService) DeleteInstrumentByID(ctx context.Context, req *proto.DeleteInstrumentByIDRequest) (*proto.DeleteInstrumentByIDResponse, error) {
+	id, err := primitive.ObjectIDFromHex(req.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := s.repo.DeleteByID(ctx, id); err != nil {
+		return nil, err
+	}
+
+	s.cache.Del(ctx, instrumentCacheKeyPrefix+req.Id)
+	s.cache.Del(ctx, allInstrumentsCacheKey)
+
+	_ = s.eventPublisher.Publish("instrument_deleted", map[string]string{
+		"id": req.Id,
+	})
+
+	return &proto.DeleteInstrumentByIDResponse{Success: true}, nil
 }
