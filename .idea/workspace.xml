@@ -6,18 +6,14 @@
   <component name="ChangeListManager">
     <list default="true" id="93decae8-afc0-4096-b94e-f8d18597fa33" name="Changes" comment="проект полностью готов">
       <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/07dd3e44-868f-4988-bac3-f99c3a9ee974.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/07dd3e44-868f-4988-bac3-f99c3a9ee974.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api-gateway/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/cmd/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api-gateway/internal/handler/instruments_handler.go" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/internal/handler/instruments_handler.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dump.rdb" beforeDir="false" afterPath="$PROJECT_DIR$/dump.rdb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instruments/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/instruments/cmd/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instruments/internal/repository/instrument_mongo.go" beforeDir="false" afterPath="$PROJECT_DIR$/instruments/internal/repository/instrument_mongo.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instruments/internal/service/instrument_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/instruments/internal/service/instrument_service.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instruments/proto/instruments.pb.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/instruments/proto/instruments_grpc.pb.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/order/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/order/cmd/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/proto/instruments.proto" beforeDir="false" afterPath="$PROJECT_DIR$/proto/instruments.proto" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api-gateway/internal/handler/cart_handler.go" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/internal/handler/cart_handler.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cart/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cart/cmd/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cart/internal/repository/cart_mongo.go" beforeDir="false" afterPath="$PROJECT_DIR$/cart/internal/repository/cart_mongo.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cart/internal/service/cart_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/cart/internal/service/cart_service.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cart/proto/cart.pb.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cart/proto/cart_grpc.pb.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/proto/cart.proto" beforeDir="false" afterPath="$PROJECT_DIR$/proto/cart.proto" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -90,10 +86,10 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\berik\GolandProjects\GoTune\cart\proto" />
       <recent name="C:\Users\berik\GolandProjects\GoTune\instruments\proto" />
       <recent name="C:\Users\berik\GolandProjects\GoTune\users\proto" />
       <recent name="C:\Users\berik\GolandProjects\GoTune\order\proto" />
-      <recent name="C:\Users\berik\GolandProjects\GoTune\cart\proto" />
       <recent name="C:\Users\berik\GolandProjects\GoTune\api-gateway\cmd" />
     </key>
   </component>

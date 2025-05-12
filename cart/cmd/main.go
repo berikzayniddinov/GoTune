@@ -2,14 +2,14 @@ package main
 
 import (
 	"context"
-	"gotune/events"
-	"log"
-	"net"
-
+	"github.com/redis/go-redis/v9"
 	"gotune/cart/internal/config"
 	"gotune/cart/internal/repository"
 	"gotune/cart/internal/service"
 	"gotune/cart/proto"
+	"gotune/events"
+	"log"
+	"net"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -30,11 +30,21 @@ func main() {
 
 	db := mongoClient.Database(dbName)
 	cartRepo := repository.NewCartRepositories(db)
+
+	rdb := redis.NewClient(&redis.Options{
+		Addr: "localhost:6379",
+	})
+	defer func() {
+		if err := rdb.Close(); err != nil {
+			log.Printf("Ошибка закрытия Redis: %v", err)
+		}
+	}()
+
 	eventPublisher := events.NewEventPublish("amqp://guest:guest@localhost:5672/")
-	cartService := service.NewCartService(cartRepo, eventPublisher)
+
+	cartService := service.NewCartService(cartRepo, eventPublisher, rdb)
 
 	grpcServer := grpc.NewServer()
-
 	proto.RegisterCartServiceServer(grpcServer, cartService)
 
 	reflection.Register(grpcServer)

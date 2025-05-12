@@ -15,6 +15,16 @@ func NewCartHandler(client proto.CartServiceClient) *CartHandler {
 	return &CartHandler{CartClient: client}
 }
 
+func writeJSON(w http.ResponseWriter, status int, data interface{}) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	_ = json.NewEncoder(w).Encode(data)
+}
+
+func writeError(w http.ResponseWriter, status int, msg string) {
+	writeJSON(w, status, map[string]string{"error": msg})
+}
+
 type AddToCartRequest struct {
 	UserID       string `json:"user_id"`
 	InstrumentID string `json:"instrument_id"`
@@ -22,9 +32,15 @@ type AddToCartRequest struct {
 }
 
 func (h *CartHandler) AddToCart(w http.ResponseWriter, r *http.Request) {
+	if r.Body == nil {
+		writeError(w, http.StatusBadRequest, "Пустое тело запроса")
+		return
+	}
+	defer r.Body.Close()
+
 	var req AddToCartRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Неверный формат запроса", http.StatusBadRequest)
+		writeError(w, http.StatusBadRequest, "Неверный формат запроса")
 		return
 	}
 
@@ -34,17 +50,17 @@ func (h *CartHandler) AddToCart(w http.ResponseWriter, r *http.Request) {
 		Quantity:     req.Quantity,
 	})
 	if err != nil {
-		http.Error(w, "Ошибка добавления в корзину", http.StatusInternalServerError)
+		writeError(w, http.StatusInternalServerError, "Ошибка добавления в корзину")
 		return
 	}
 
-	json.NewEncoder(w).Encode(map[string]bool{"success": true})
+	writeJSON(w, http.StatusOK, map[string]bool{"success": true})
 }
 
 func (h *CartHandler) GetCart(w http.ResponseWriter, r *http.Request) {
 	userID := r.URL.Query().Get("user_id")
 	if userID == "" {
-		http.Error(w, "Отсутствует user_id", http.StatusBadRequest)
+		writeError(w, http.StatusBadRequest, "Отсутствует user_id")
 		return
 	}
 
@@ -52,11 +68,11 @@ func (h *CartHandler) GetCart(w http.ResponseWriter, r *http.Request) {
 		UserId: userID,
 	})
 	if err != nil {
-		http.Error(w, "Ошибка получения корзины", http.StatusInternalServerError)
+		writeError(w, http.StatusInternalServerError, "Ошибка получения корзины")
 		return
 	}
 
-	json.NewEncoder(w).Encode(resp.Items)
+	writeJSON(w, http.StatusOK, resp.Items)
 }
 
 type RemoveFromCartRequest struct {
@@ -65,9 +81,15 @@ type RemoveFromCartRequest struct {
 }
 
 func (h *CartHandler) RemoveFromCart(w http.ResponseWriter, r *http.Request) {
+	if r.Body == nil {
+		writeError(w, http.StatusBadRequest, "Пустое тело запроса")
+		return
+	}
+	defer r.Body.Close()
+
 	var req RemoveFromCartRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Неверный формат запроса", http.StatusBadRequest)
+		writeError(w, http.StatusBadRequest, "Неверный формат запроса")
 		return
 	}
 
@@ -76,11 +98,11 @@ func (h *CartHandler) RemoveFromCart(w http.ResponseWriter, r *http.Request) {
 		InstrumentId: req.InstrumentID,
 	})
 	if err != nil {
-		http.Error(w, "Ошибка удаления из корзины", http.StatusInternalServerError)
+		writeError(w, http.StatusInternalServerError, "Ошибка удаления из корзины")
 		return
 	}
 
-	json.NewEncoder(w).Encode(map[string]bool{"success": true})
+	writeJSON(w, http.StatusOK, map[string]bool{"success": true})
 }
 
 type ClearCartRequest struct {
@@ -88,9 +110,15 @@ type ClearCartRequest struct {
 }
 
 func (h *CartHandler) ClearCart(w http.ResponseWriter, r *http.Request) {
+	if r.Body == nil {
+		writeError(w, http.StatusBadRequest, "Пустое тело запроса")
+		return
+	}
+	defer r.Body.Close()
+
 	var req ClearCartRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Неверный формат запроса", http.StatusBadRequest)
+		writeError(w, http.StatusBadRequest, "Неверный формат запроса")
 		return
 	}
 
@@ -98,9 +126,9 @@ func (h *CartHandler) ClearCart(w http.ResponseWriter, r *http.Request) {
 		UserId: req.UserID,
 	})
 	if err != nil {
-		http.Error(w, "Ошибка очистки корзины", http.StatusInternalServerError)
+		writeError(w, http.StatusInternalServerError, "Ошибка очистки корзины")
 		return
 	}
 
-	json.NewEncoder(w).Encode(map[string]bool{"success": true})
+	writeJSON(w, http.StatusOK, map[string]bool{"success": true})
 }
