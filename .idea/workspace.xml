@@ -5,15 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="93decae8-afc0-4096-b94e-f8d18597fa33" name="Changes" comment="проект полностью готов">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api-gateway/internal/handler/cart_handler.go" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/internal/handler/cart_handler.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cart/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cart/cmd/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cart/internal/repository/cart_mongo.go" beforeDir="false" afterPath="$PROJECT_DIR$/cart/internal/repository/cart_mongo.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cart/internal/service/cart_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/cart/internal/service/cart_service.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cart/proto/cart.pb.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cart/proto/cart_grpc.pb.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/proto/cart.proto" beforeDir="false" afterPath="$PROJECT_DIR$/proto/cart.proto" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/order/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/order/cmd/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/order/internal/service/order_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/order/internal/service/order_service.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

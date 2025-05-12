@@ -2,33 +2,41 @@ package service
 
 import (
 	"context"
+	"encoding/json"
+
+	"github.com/redis/go-redis/v9"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"gotune/events"
 	"gotune/order/internal/entity"
 	"gotune/order/internal/repository"
 	"gotune/order/proto"
 	usersproto "gotune/users/proto"
 	"time"
+)
 
-	"go.mongodb.org/mongo-driver/bson/primitive"
+const (
+	orderCacheKeyPrefix  = "order:user:"
+	orderCacheExpiration = 30 * time.Minute
 )
 
 type OrderService struct {
 	repo           repository.OrderRepository
 	userClient     usersproto.UserServiceClient
 	eventPublisher *events.EventPublisher
+	cache          *redis.Client
 	proto.UnimplementedOrderServiceServer
 }
 
-func NewOrderService(repo repository.OrderRepository, userClient usersproto.UserServiceClient, publisher *events.EventPublisher) *OrderService {
+func NewOrderService(repo repository.OrderRepository, userClient usersproto.UserServiceClient, publisher *events.EventPublisher, cache *redis.Client) *OrderService {
 	return &OrderService{
 		repo:           repo,
 		userClient:     userClient,
 		eventPublisher: publisher,
+		cache:          cache,
 	}
 }
 
 func (s *OrderService) CreateOrder(ctx context.Context, req *proto.CreateOrderRequest) (*proto.CreateOrderResponse, error) {
-	// Проверка существования пользователя
 	_, err := s.userClient.GetUser(ctx, &usersproto.GetUserRequest{UserId: req.UserId})
 	if err != nil {
 		return nil, err
@@ -61,16 +69,27 @@ func (s *OrderService) CreateOrder(ctx context.Context, req *proto.CreateOrderRe
 		"user_id":  req.UserId,
 	})
 
+	// Инвалидация кэша
+	s.invalidateUserOrdersCache(ctx, req.UserId)
+
 	return &proto.CreateOrderResponse{
 		OrderId: id.Hex(),
 	}, nil
 }
 
 func (s *OrderService) GetOrders(ctx context.Context, req *proto.GetOrdersRequest) (*proto.GetOrdersResponse, error) {
-	// Проверка существования пользователя
 	_, err := s.userClient.GetUser(ctx, &usersproto.GetUserRequest{UserId: req.UserId})
 	if err != nil {
 		return nil, err
+	}
+
+	cacheKey := orderCacheKeyPrefix + req.UserId
+	cached, err := s.cache.Get(ctx, cacheKey).Result()
+	if err == nil {
+		var cachedResp proto.GetOrdersResponse
+		if err := json.Unmarshal([]byte(cached), &cachedResp); err == nil {
+			return &cachedResp, nil
+		}
 	}
 
 	userID, _ := primitive.ObjectIDFromHex(req.UserId)
@@ -96,13 +115,17 @@ func (s *OrderService) GetOrders(ctx context.Context, req *proto.GetOrdersReques
 		})
 	}
 
-	return &proto.GetOrdersResponse{
+	resp := &proto.GetOrdersResponse{
 		Orders: protoOrders,
-	}, nil
+	}
+
+	data, _ := json.Marshal(resp)
+	s.cache.Set(ctx, cacheKey, data, orderCacheExpiration)
+
+	return resp, nil
 }
 
 func (s *OrderService) DeleteOrder(ctx context.Context, req *proto.DeleteOrderRequest) (*proto.DeleteOrderResponse, error) {
-	// Проверка существования пользователя
 	_, err := s.userClient.GetUser(ctx, &usersproto.GetUserRequest{UserId: req.UserId})
 	if err != nil {
 		return nil, err
@@ -115,5 +138,12 @@ func (s *OrderService) DeleteOrder(ctx context.Context, req *proto.DeleteOrderRe
 		return nil, err
 	}
 
+	s.invalidateUserOrdersCache(ctx, req.UserId)
+
 	return &proto.DeleteOrderResponse{Success: true}, nil
+}
+
+func (s *OrderService) invalidateUserOrdersCache(ctx context.Context, userId string) {
+	cacheKey := orderCacheKeyPrefix + userId
+	s.cache.Del(ctx, cacheKey)
 }
