@@ -1,11 +1,13 @@
 package main
 
 import (
-	"github.com/gorilla/mux"
-	"gotune/api-gateway/internal/client"
-	"gotune/api-gateway/internal/handler"
 	"log"
 	"net/http"
+
+	"github.com/gorilla/mux"
+
+	"gotune/api-gateway/internal/client"
+	"gotune/api-gateway/internal/handler"
 )
 
 func main() {
@@ -31,6 +33,7 @@ func main() {
 	r.HandleFunc("/users/{id}", userHandler.UpdateUser).Methods("PUT")
 	r.HandleFunc("/users/{id}", userHandler.DeleteUser).Methods("DELETE")
 	r.HandleFunc("/users/cache/clear", userHandler.DeleteAllUsersCache).Methods("DELETE")
+	r.HandleFunc("/users/confirm", userHandler.ConfirmUser).Methods("POST")
 
 	// Instrument routes
 	r.HandleFunc("/instruments", instrumentHandler.CreateInstrument).Methods("POST")

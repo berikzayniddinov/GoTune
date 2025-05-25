@@ -3,11 +3,13 @@ package handler
 import (
 	"context"
 	"encoding/json"
+	"net/http"
+
 	"github.com/gorilla/mux"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
 	"gotune/users/proto"
-	"net/http"
 )
 
 type UserHandler struct {
@@ -191,5 +193,32 @@ func (h *UserHandler) DeleteAllUsersCache(w http.ResponseWriter, r *http.Request
 
 	json.NewEncoder(w).Encode(map[string]bool{
 		"success": resp.Success,
+	})
+}
+
+type ConfirmUserRequest struct {
+	Email string `json:"email"`
+	Code  string `json:"code"`
+}
+
+func (h *UserHandler) ConfirmUser(w http.ResponseWriter, r *http.Request) {
+	var req ConfirmUserRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Неверный формат запроса", http.StatusBadRequest)
+		return
+	}
+
+	resp, err := h.UserClient.ConfirmUser(context.Background(), &proto.ConfirmUserRequest{
+		Email: req.Email,
+		Code:  req.Code,
+	})
+	if err != nil {
+		http.Error(w, "Ошибка подтверждения пользователя", http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success": resp.Success,
+		"message": resp.Message,
 	})
 }

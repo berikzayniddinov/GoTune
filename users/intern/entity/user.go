@@ -8,4 +8,6 @@ type User struct {
 	Email     string             `bson:"email"`
 	Password  string             `bson:"password"`
 	CreatedAt int64              `bson:"created_at"`
+	UpdatedAt int64              `bson:"updated_at,omitempty"`
+	Confirmed bool               `bson:"confirmed"` // новое поле
 }

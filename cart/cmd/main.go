@@ -2,14 +2,17 @@ package main
 
 import (
 	"context"
+	"log"
+	"net"
+
 	"github.com/redis/go-redis/v9"
+
 	"gotune/cart/internal/config"
 	"gotune/cart/internal/repository"
 	"gotune/cart/internal/service"
+	"gotune/cart/migrations"
 	"gotune/cart/proto"
 	"gotune/events"
-	"log"
-	"net"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -29,6 +32,9 @@ func main() {
 	}()
 
 	db := mongoClient.Database(dbName)
+	if err := migrations.RunM(db); err != nil {
+		log.Fatalf("❌ Ошибка при применении миграций: %v", err)
+	}
 	cartRepo := repository.NewCartRepositories(db)
 
 	rdb := redis.NewClient(&redis.Options{

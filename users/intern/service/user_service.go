@@ -4,15 +4,20 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
+	"math/rand"
+	"time"
+
 	"github.com/redis/go-redis/v9"
+	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
 	"gotune/events"
-	"gotune/users/internal/entity"
-	"gotune/users/internal/repository"
+	"gotune/users/intern/entity"
+	"gotune/users/intern/repository"
 	"gotune/users/pkg/hash"
 	"gotune/users/proto"
-	"time"
 )
 
 const (
@@ -20,55 +25,101 @@ const (
 	userCacheExpiration  = 30 * time.Minute
 	allUsersCacheKey     = "users:all"
 	allUsersCacheExpTime = 5 * time.Minute
+	confirmationCodeTTL  = 15 * time.Minute
 )
+
+type EmailSender interface {
+	SendEmail(to, subject, body string) error
+}
 
 type UserService struct {
 	repo           repository.UserRepository
 	eventPublisher *events.EventPublisher
 	cache          *redis.Client
+	emailSender    EmailSender
 	proto.UnimplementedUserServiceServer
 }
 
-func NewUserService(repo repository.UserRepository, eventPublisher *events.EventPublisher, cache *redis.Client) *UserService {
+type TestUserService struct {
+	repo           repository.UserRepository
+	eventPublisher *events.EventPublisher
+	cache          *redis.Client
+}
+
+func NewUserService(
+	repo repository.UserRepository,
+	eventPublisher *events.EventPublisher,
+	cache *redis.Client,
+	emailSender EmailSender,
+) *UserService {
 	return &UserService{
 		repo:           repo,
 		eventPublisher: eventPublisher,
 		cache:          cache,
+		emailSender:    emailSender,
 	}
 }
 
+func generateConfirmationCode() string {
+	rand.Seed(time.Now().UnixNano())
+	return fmt.Sprintf("%06d", rand.Intn(1000000))
+}
+
 func (s *UserService) RegisterUser(ctx context.Context, req *proto.RegisterUserRequest) (*proto.RegisterUserResponse, error) {
-	_, err := s.repo.FindByEmail(ctx, req.Email)
-	if err == nil {
-		return nil, status.Errorf(codes.AlreadyExists, "Email уже зарегистрирован")
+	session, err := s.repo.GetDatabase().Client().StartSession()
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "не удалось начать сессию: %v", err)
+	}
+	defer session.EndSession(ctx)
+
+	callback := func(sessCtx mongo.SessionContext) (interface{}, error) {
+		_, err := s.repo.FindByEmail(sessCtx, req.Email)
+		if err == nil {
+			return nil, status.Errorf(codes.AlreadyExists, "Email уже зарегистрирован")
+		}
+
+		hashedPassword, err := hash.HashPassword(req.Password)
+		if err != nil {
+			return nil, err
+		}
+
+		user := &entity.User{
+			Username: req.Username,
+			Email:    req.Email,
+			Password: hashedPassword,
+		}
+
+		if err := s.repo.Create(sessCtx, user); err != nil {
+			return nil, err
+		}
+
+		code := generateConfirmationCode()
+		err = s.cache.Set(ctx, "confirm_code:"+user.Email, code, confirmationCodeTTL).Err()
+		if err != nil {
+			log.Printf("Ошибка сохранения кода подтверждения в Redis: %v", err)
+		}
+
+		subject := "Добро пожаловать в GoTune! Подтвердите ваш email"
+		body := fmt.Sprintf("Здравствуйте, %s!\n\nСпасибо за регистрацию. Ваш код подтверждения: %s\n\nКод действителен %v минут.", user.Username, code, confirmationCodeTTL.Minutes())
+		if err := s.emailSender.SendEmail(user.Email, subject, body); err != nil {
+			log.Printf("Ошибка отправки email: %v", err)
+		}
+
+		_ = s.eventPublisher.Publish("user_registered", map[string]string{
+			"user_id": user.ID.Hex(),
+			"email":   user.Email,
+		})
+
+		return user.ID.Hex(), nil
 	}
 
-	hashedPassword, err := hash.HashPassword(req.Password)
+	result, err := session.WithTransaction(ctx, callback)
 	if err != nil {
 		return nil, err
 	}
 
-	user := &entity.User{
-		Username: req.Username,
-		Email:    req.Email,
-		Password: hashedPassword,
-	}
-
-	if err := s.repo.Create(ctx, user); err != nil {
-		return nil, err
-	}
-
-	//s.invalidateUserCache(ctx, user.ID.Hex())
-
-	//s.cache.Del(ctx, allUsersCacheKey)
-
-	_ = s.eventPublisher.Publish("user_registered", map[string]string{
-		"user_id": user.ID.Hex(),
-		"email":   user.Email,
-	})
-
 	return &proto.RegisterUserResponse{
-		UserId: user.ID.Hex(),
+		UserId: result.(string),
 	}, nil
 }
 
@@ -187,8 +238,6 @@ func (s *UserService) UpdateUser(ctx context.Context, req *proto.UpdateUserReque
 	data, _ := json.Marshal(resp)
 	s.cache.Set(ctx, userCacheKeyPrefix+req.UserId, data, userCacheExpiration)
 
-	//s.cache.Del(ctx, allUsersCacheKey)
-
 	_ = s.eventPublisher.Publish("user_updated", map[string]string{
 		"user_id": user.ID.Hex(),
 		"email":   user.Email,
@@ -210,8 +259,6 @@ func (s *UserService) DeleteUser(ctx context.Context, req *proto.DeleteUserReque
 	}
 
 	s.invalidateUserCache(ctx, req.UserId)
-
-	//s.cache.Del(ctx, allUsersCacheKey)
 
 	_ = s.eventPublisher.Publish("user_deleted", map[string]string{
 		"user_id": req.UserId,
@@ -241,7 +288,40 @@ func (s *UserService) DeleteAllUsersCache(ctx context.Context, req *proto.Delete
 		Success: true,
 	}, nil
 }
+
 func (s *UserService) invalidateUserCache(ctx context.Context, userId string) {
 	cacheKey := userCacheKeyPrefix + userId
 	s.cache.Del(ctx, cacheKey)
+}
+
+func (s *UserService) ConfirmUser(ctx context.Context, req *proto.ConfirmUserRequest) (*proto.ConfirmUserResponse, error) {
+	user, err := s.repo.FindByEmail(ctx, req.Email)
+	if err != nil {
+		return nil, status.Errorf(codes.NotFound, "User not found")
+	}
+
+	storedCode, err := s.cache.Get(ctx, "confirm_code:"+req.Email).Result()
+	if err != nil || storedCode != req.Code {
+		return &proto.ConfirmUserResponse{
+			Success: false,
+			Message: "Invalid or expired confirmation code",
+		}, nil
+	}
+
+	user.Confirmed = true
+	if err := s.repo.Update(ctx, user); err != nil {
+		return nil, err
+	}
+
+	s.cache.Del(ctx, "confirm_code:"+req.Email)
+
+	_ = s.eventPublisher.Publish("user_confirmed", map[string]string{
+		"user_id": user.ID.Hex(),
+		"email":   user.Email,
+	})
+
+	return &proto.ConfirmUserResponse{
+		Success: true,
+		Message: "User confirmed successfully",
+	}, nil
 }

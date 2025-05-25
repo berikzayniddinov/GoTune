@@ -2,16 +2,20 @@ package main
 
 import (
 	"context"
+	"log"
+	"net"
+
 	"github.com/redis/go-redis/v9"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+
 	"gotune/events"
-	"gotune/users/internal/config"
-	"gotune/users/internal/repository"
-	"gotune/users/internal/service"
+	"gotune/users/intern/config"
+	"gotune/users/intern/repository"
+	"gotune/users/intern/service"
+	"gotune/users/migrations"
+	"gotune/users/pkg/mailer"
 	"gotune/users/proto"
-	"log"
-	"net"
 )
 
 const (
@@ -27,11 +31,16 @@ func main() {
 		}
 	}()
 	db := mongoClient.Database(dbName)
+
+	if err := migrations.RunAll(db); err != nil {
+		log.Fatalf("❌ Ошибка при применении миграций: %v", err)
+	}
+
 	userRepo := repository.NewUserRepository(db)
 
 	// Redis
 	rdb := redis.NewClient(&redis.Options{
-		Addr: "localhost:6379", // или поменяй порт, если другой
+		Addr: "localhost:6379",
 	})
 	defer func() {
 		if err := rdb.Close(); err != nil {
@@ -39,10 +48,22 @@ func main() {
 		}
 	}()
 
+	// RabbitMQ
 	eventPublisher := events.NewEventPublish("amqp://guest:guest@localhost:5672/")
 
-	userService := service.NewUserService(userRepo, eventPublisher, rdb)
+	// SMTP Mailer
+	emailSender := &mailer.SMTPMailer{
+		From:     "berikbakhtiarovich@gmail.com",
+		Host:     "smtp.gmail.com",
+		Port:     587,
+		Username: "berikbakhtiarovich@gmail.com",
+		Password: "rtbdxwkqjdwrowsm",
+	}
 
+	// Создание сервиса пользователей
+	userService := service.NewUserService(userRepo, eventPublisher, rdb, emailSender)
+
+	// gRPC сервер
 	grpcServer := grpc.NewServer()
 	proto.RegisterUserServiceServer(grpcServer, userService)
 	reflection.Register(grpcServer)

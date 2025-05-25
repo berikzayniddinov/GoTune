@@ -2,10 +2,13 @@ package main
 
 import (
 	"context"
-	"github.com/redis/go-redis/v9"
-	"gotune/events"
 	"log"
 	"net"
+
+	"github.com/redis/go-redis/v9"
+
+	"gotune/events"
+	"gotune/instruments/migrations"
 
 	"gotune/instruments/internal/config"
 	"gotune/instruments/internal/repository"
@@ -30,6 +33,9 @@ func main() {
 	}()
 
 	db := mongoClient.Database(dbName)
+	if err := migrations.RunAll(db); err != nil {
+		log.Fatalf("❌ Ошибка при применении миграций: %v", err)
+	}
 	instrumentRepo := repository.NewInstrumentRepositories(db)
 	rdb := redis.NewClient(&redis.Options{
 		Addr: "localhost:6379", // или поменяй порт, если другой

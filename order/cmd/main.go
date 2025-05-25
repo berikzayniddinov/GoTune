@@ -2,10 +2,13 @@ package main
 
 import (
 	"context"
-	"github.com/redis/go-redis/v9"
-	"gotune/events"
 	"log"
 	"net"
+
+	"github.com/redis/go-redis/v9"
+
+	"gotune/events"
+	"gotune/order/migrations"
 
 	"gotune/order/internal/config"
 	"gotune/order/internal/repository"
@@ -32,6 +35,9 @@ func main() {
 		}
 	}()
 	db := mongoClient.Database(dbName)
+	if err := migrations.RunAll(db); err != nil {
+		log.Fatalf("❌ Ошибка при применении миграций: %v", err)
+	}
 	orderRepo := repository.NewOrderRepository(db)
 
 	// Подключение к Redis
