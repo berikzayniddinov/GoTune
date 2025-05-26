@@ -11,6 +11,7 @@ import (
 	"gotune/events"
 	"gotune/instruments/internal/entity"
 	"gotune/instruments/internal/repository"
+	"gotune/instruments/metrics"
 	"gotune/instruments/proto"
 )
 
@@ -37,22 +38,31 @@ func NewInstrumentService(repo repository.InstrumentRepository, publisher *event
 }
 
 func (s *InstrumentService) CreateInstrument(ctx context.Context, req *proto.CreateInstrumentRequest) (*proto.CreateInstrumentResponse, error) {
+	metrics.InstrumentCreateAttempts.Inc()
+	start := time.Now()
+
 	instrument := &entity.Instrument{
 		Name:        req.Name,
 		Description: req.Description,
 		Price:       req.Price,
 	}
 	id, err := s.repo.Create(ctx, instrument)
+	duration := time.Since(start).Seconds()
+	metrics.InstrumentCreateDuration.Observe(duration)
+
 	if err != nil {
 		return nil, err
 	}
 
-	// Invalidate global instruments list cache
+	metrics.InstrumentCreatedTotal.Inc()
+
+	// Инвалидируем кеш глобального списка
 	s.cache.Del(ctx, allInstrumentsCacheKey)
 
 	_ = s.eventPublisher.Publish("instrument_created", map[string]string{
 		"id": id.Hex(),
 	})
+
 	return &proto.CreateInstrumentResponse{
 		Id: id.Hex(),
 	}, nil

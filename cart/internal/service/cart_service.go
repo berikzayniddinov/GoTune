@@ -4,12 +4,16 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"time"
+
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/redis/go-redis/v9"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+
 	"gotune/cart/internal/repository"
+	"gotune/cart/metrics"
 	"gotune/cart/proto"
 	"gotune/events"
-	"time"
 )
 
 const (
@@ -33,6 +37,10 @@ func NewCartService(repo repository.CartRepository, publisher *events.EventPubli
 }
 
 func (s *CartService) AddToCart(ctx context.Context, req *proto.AddToCartRequest) (*proto.AddToCartResponse, error) {
+	metrics.CartCreateAttempts.Inc()
+	timer := prometheus.NewTimer(metrics.CartCreateDuration)
+	defer timer.ObserveDuration()
+
 	userID, err := primitive.ObjectIDFromHex(req.UserId)
 	if err != nil {
 		return nil, fmt.Errorf("invalid user ID: %w", err)
@@ -52,6 +60,8 @@ func (s *CartService) AddToCart(ctx context.Context, req *proto.AddToCartRequest
 		"user_id":       req.UserId,
 		"instrument_id": req.InstrumentId,
 	})
+
+	metrics.CartCreatedTotal.Inc()
 
 	return &proto.AddToCartResponse{Success: true}, nil
 }

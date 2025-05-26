@@ -5,12 +5,14 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/redis/go-redis/v9"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"gotune/events"
 	"gotune/order/internal/entity"
 	"gotune/order/internal/repository"
+	"gotune/order/metrics"
 	"gotune/order/proto"
 	usersproto "gotune/users/proto"
 )
@@ -38,6 +40,10 @@ func NewOrderService(repo repository.OrderRepository, userClient usersproto.User
 }
 
 func (s *OrderService) CreateOrder(ctx context.Context, req *proto.CreateOrderRequest) (*proto.CreateOrderResponse, error) {
+	metrics.OrderCreateAttempts.Inc()
+	timer := prometheus.NewTimer(metrics.OrderCreateDuration)
+	defer timer.ObserveDuration()
+
 	_, err := s.userClient.GetUser(ctx, &usersproto.GetUserRequest{UserId: req.UserId})
 	if err != nil {
 		return nil, err
@@ -64,6 +70,8 @@ func (s *OrderService) CreateOrder(ctx context.Context, req *proto.CreateOrderRe
 	if err != nil {
 		return nil, err
 	}
+
+	metrics.OrderCreatedTotal.Inc()
 
 	_ = s.eventPublisher.Publish("order_created", map[string]string{
 		"order_id": id.Hex(),

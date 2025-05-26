@@ -5,8 +5,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="93decae8-afc0-4096-b94e-f8d18597fa33" name="Changes" comment="Финальныый проект добавлены СМПТ и миграции">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cart/metrics/metrics.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/queries.active" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/wal/00000000" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/instruments/metrics/metrics.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/order/metrics/metrics.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/prometheus.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/run" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/users/metrics/metrics.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cart/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cart/cmd/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cart/internal/service/cart_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/cart/internal/service/cart_service.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/instruments/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/instruments/cmd/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/instruments/internal/service/instrument_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/instruments/internal/service/instrument_service.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/order/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/order/cmd/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/order/internal/service/order_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/order/internal/service/order_service.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/users/cmd/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/intern/service/user_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/users/intern/service/user_service.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

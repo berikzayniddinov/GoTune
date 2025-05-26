@@ -4,7 +4,9 @@ import (
 	"context"
 	"log"
 	"net"
+	"net/http" // 📌 добавлено для метрик
 
+	"github.com/prometheus/client_golang/prometheus/promhttp" // 📌 добавлено для метрик
 	"github.com/redis/go-redis/v9"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -13,6 +15,7 @@ import (
 	"gotune/users/intern/config"
 	"gotune/users/intern/repository"
 	"gotune/users/intern/service"
+	"gotune/users/metrics" // 📌 добавлено для метрик
 	"gotune/users/migrations"
 	"gotune/users/pkg/mailer"
 	"gotune/users/proto"
@@ -24,6 +27,16 @@ const (
 )
 
 func main() {
+	// 📌 Запуск HTTP-сервера для метрик
+	go func() {
+		metrics.Register() // Регистрация метрик
+		http.Handle("/metrics", promhttp.Handler())
+		log.Println("📊 Метрики доступны на :2112/metrics")
+		if err := http.ListenAndServe(":2112", nil); err != nil {
+			log.Fatalf("Ошибка запуска HTTP-сервера метрик: %v", err)
+		}
+	}()
+
 	mongoClient := config.ConnectMon(mongoURI)
 	defer func() {
 		if err := mongoClient.Disconnect(context.Background()); err != nil {

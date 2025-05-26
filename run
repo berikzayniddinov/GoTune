@@ -1,0 +1,4 @@
+Запуск Прометеуса & "C:\Users\berik\Downloads\prometheus-3.2.1.windows-amd64\prometheus-3.2.1.windows-amd64\prometheus.exe" --config.file="C:\Users\berik\GolandProjects\GoTune\prometheus.yml"
+
+Запуск Графана cd C:\Users\berik\Downloads\grafana-enterprise-11.6.0.windows-amd64\grafana-v11.6.0\bin
+.\grafana-server.exe

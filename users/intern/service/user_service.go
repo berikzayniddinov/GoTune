@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/redis/go-redis/v9"
 	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc/codes"
@@ -16,6 +17,7 @@ import (
 	"gotune/events"
 	"gotune/users/intern/entity"
 	"gotune/users/intern/repository"
+	"gotune/users/metrics"
 	"gotune/users/pkg/hash"
 	"gotune/users/proto"
 )
@@ -73,6 +75,13 @@ func (s *UserService) RegisterUser(ctx context.Context, req *proto.RegisterUserR
 	defer session.EndSession(ctx)
 
 	callback := func(sessCtx mongo.SessionContext) (interface{}, error) {
+		// ✅ Увеличиваем количество попыток регистрации
+		metrics.RegistrationAttempts.Inc()
+
+		// ✅ Засекаем время выполнения регистрации
+		timer := prometheus.NewTimer(metrics.RegistrationDuration)
+		defer timer.ObserveDuration()
+
 		_, err := s.repo.FindByEmail(sessCtx, req.Email)
 		if err == nil {
 			return nil, status.Errorf(codes.AlreadyExists, "Email уже зарегистрирован")
@@ -92,6 +101,9 @@ func (s *UserService) RegisterUser(ctx context.Context, req *proto.RegisterUserR
 		if err := s.repo.Create(sessCtx, user); err != nil {
 			return nil, err
 		}
+
+		// ✅ Увеличиваем количество успешных регистраций
+		metrics.RegisteredUsersTotal.Inc()
 
 		code := generateConfirmationCode()
 		err = s.cache.Set(ctx, "confirm_code:"+user.Email, code, confirmationCodeTTL).Err()
