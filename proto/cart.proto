@@ -9,8 +9,6 @@ service CartService {
   rpc GetCart(GetCartRequest) returns (GetCartResponse);
   rpc RemoveFromCart(RemoveFromCartRequest) returns (RemoveFromCartResponse);
   rpc ClearCart(ClearCartRequest) returns (ClearCartResponse);
-
-  // Новый метод для сброса кэша корзин всех пользователей (использовать только в админке)
   rpc DeleteAllCartCache(DeleteAllCartCacheRequest) returns (DeleteAllCartCacheResponse);
 }
 
@@ -53,8 +51,6 @@ message ClearCartRequest {
 message ClearCartResponse {
   bool success = 1;
 }
-
-// ==== Админ-интерфейс ====
 
 message DeleteAllCartCacheRequest {}
 

@@ -3,9 +3,10 @@ package handler
 import (
 	"context"
 	"encoding/json"
+	"net/http"
+
 	"gotune/order/proto"
 	usersproto "gotune/users/proto"
-	"net/http"
 )
 
 type OrderHandler struct {
@@ -68,7 +69,6 @@ func (h *OrderHandler) GetOrders(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Проверка пользователя
 	_, err := h.UserClient.GetUser(context.Background(), &usersproto.GetUserRequest{UserId: userID})
 	if err != nil {
 		http.Error(w, "Пользователь не найден", http.StatusUnauthorized)
@@ -98,7 +98,6 @@ func (h *OrderHandler) DeleteOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Проверка пользователя
 	_, err := h.UserClient.GetUser(context.Background(), &usersproto.GetUserRequest{UserId: req.UserID})
 	if err != nil {
 		http.Error(w, "Пользователь не найден", http.StatusUnauthorized)

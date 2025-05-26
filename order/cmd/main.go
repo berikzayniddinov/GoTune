@@ -27,7 +27,6 @@ const (
 )
 
 func main() {
-	// Подключение к MongoDB
 	mongoClient := config.ConnectMongo(mongoURI)
 	defer func() {
 		if err := mongoClient.Disconnect(context.Background()); err != nil {
@@ -40,7 +39,6 @@ func main() {
 	}
 	orderRepo := repository.NewOrderRepository(db)
 
-	// Подключение к Redis
 	rdb := redis.NewClient(&redis.Options{
 		Addr: "localhost:6379",
 	})
@@ -50,10 +48,8 @@ func main() {
 		}
 	}()
 
-	// Подключение к RabbitMQ
 	eventPublisher := events.NewEventPublish("amqp://guest:guest@localhost:5672/")
 
-	// Подключение к UserService
 	userConn, err := grpc.Dial(userServiceAddress, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("Не удалось подключиться к UserService: %v", err)

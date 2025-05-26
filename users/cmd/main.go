@@ -38,7 +38,6 @@ func main() {
 
 	userRepo := repository.NewUserRepository(db)
 
-	// Redis
 	rdb := redis.NewClient(&redis.Options{
 		Addr: "localhost:6379",
 	})
@@ -48,10 +47,8 @@ func main() {
 		}
 	}()
 
-	// RabbitMQ
 	eventPublisher := events.NewEventPublish("amqp://guest:guest@localhost:5672/")
 
-	// SMTP Mailer
 	emailSender := &mailer.SMTPMailer{
 		From:     "berikbakhtiarovich@gmail.com",
 		Host:     "smtp.gmail.com",
@@ -60,10 +57,8 @@ func main() {
 		Password: "rtbdxwkqjdwrowsm",
 	}
 
-	// Создание сервиса пользователей
 	userService := service.NewUserService(userRepo, eventPublisher, rdb, emailSender)
 
-	// gRPC сервер
 	grpcServer := grpc.NewServer()
 	proto.RegisterUserServiceServer(grpcServer, userService)
 	reflection.Register(grpcServer)

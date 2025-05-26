@@ -3,15 +3,16 @@ package service
 import (
 	"context"
 	"encoding/json"
+	"time"
 
 	"github.com/redis/go-redis/v9"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+
 	"gotune/events"
 	"gotune/order/internal/entity"
 	"gotune/order/internal/repository"
 	"gotune/order/proto"
 	usersproto "gotune/users/proto"
-	"time"
 )
 
 const (
@@ -69,7 +70,6 @@ func (s *OrderService) CreateOrder(ctx context.Context, req *proto.CreateOrderRe
 		"user_id":  req.UserId,
 	})
 
-	// Инвалидация кэша
 	s.invalidateUserOrdersCache(ctx, req.UserId)
 
 	return &proto.CreateOrderResponse{

@@ -7,7 +7,12 @@
       <secret-storage>master_key</secret-storage>
       <schema-mapping>
         <introspection-scope>
-          <node kind="schema" negative="1" />
+          <node kind="schema">
+            <name qname="gotune_cart" />
+            <name qname="gotune_instruments" />
+            <name qname="gotune_order" />
+            <name qname="gotune_users" />
+          </node>
         </introspection-scope>
       </schema-mapping>
     </data-source>

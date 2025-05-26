@@ -9,5 +9,5 @@ type User struct {
 	Password  string             `bson:"password"`
 	CreatedAt int64              `bson:"created_at"`
 	UpdatedAt int64              `bson:"updated_at,omitempty"`
-	Confirmed bool               `bson:"confirmed"` // новое поле
+	Confirmed bool               `bson:"confirmed"`
 }

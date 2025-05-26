@@ -2,10 +2,12 @@ package repository
 
 import (
 	"context"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+
 	"gotune/cart/internal/entity"
 )
 
@@ -38,7 +40,6 @@ func (r *cartRepository) AddToCart(ctx context.Context, userID, instrumentID pri
 		return err
 	}
 	if res.MatchedCount == 0 {
-		// если такого нет — просто пушим новый
 		filter = bson.M{"user_id": userID}
 		update = bson.M{
 			"$push": bson.M{

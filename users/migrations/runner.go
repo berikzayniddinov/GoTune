@@ -22,7 +22,6 @@ func RunAll(db *mongo.Database) error {
 	applied := db.Collection("migrations")
 
 	for _, m := range migrations {
-		// Проверяем, была ли уже применена
 		var result bson.M
 		err := applied.FindOne(context.Background(), bson.M{"name": m.Name}).Decode(&result)
 		if err == nil {
@@ -30,12 +29,10 @@ func RunAll(db *mongo.Database) error {
 			continue
 		}
 
-		// Применяем миграцию
 		if err := m.Func(db); err != nil {
 			return err
 		}
 
-		// Сохраняем как применённую
 		_, err = applied.InsertOne(context.Background(), bson.M{
 			"name":      m.Name,
 			"appliedAt": time.Now(),

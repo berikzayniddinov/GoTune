@@ -3,9 +3,11 @@ package handler
 import (
 	"context"
 	"encoding/json"
-	"github.com/gorilla/mux"
-	"gotune/instruments/proto"
 	"net/http"
+
+	"github.com/gorilla/mux"
+
+	"gotune/instruments/proto"
 )
 
 type InstrumentHandler struct {
@@ -116,6 +118,5 @@ func (h *InstrumentHandler) UpdateInstrumentByID(w http.ResponseWriter, r *http.
 }
 
 func (h *InstrumentHandler) ClearInstrumentCache(w http.ResponseWriter, r *http.Request) {
-	// This could be a method added to the service to clear entire cache
 	http.Error(w, "Not implemented", http.StatusNotImplemented)
 }

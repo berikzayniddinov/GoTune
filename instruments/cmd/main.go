@@ -38,7 +38,7 @@ func main() {
 	}
 	instrumentRepo := repository.NewInstrumentRepositories(db)
 	rdb := redis.NewClient(&redis.Options{
-		Addr: "localhost:6379", // или поменяй порт, если другой
+		Addr: "localhost:6379",
 	})
 	defer func() {
 		if err := rdb.Close(); err != nil {

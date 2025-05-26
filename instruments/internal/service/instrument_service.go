@@ -7,6 +7,7 @@ import (
 
 	"github.com/redis/go-redis/v9"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+
 	"gotune/events"
 	"gotune/instruments/internal/entity"
 	"gotune/instruments/internal/repository"
