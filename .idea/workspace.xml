@@ -5,25 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="93decae8-afc0-4096-b94e-f8d18597fa33" name="Changes" comment="Финальныый проект добавлены СМПТ и миграции">
-      <change afterPath="$PROJECT_DIR$/cart/metrics/metrics.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/data/queries.active" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/data/wal/00000000" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/instruments/metrics/metrics.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/order/metrics/metrics.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/prometheus.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/run" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/users/metrics/metrics.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cart/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cart/cmd/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cart/internal/service/cart_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/cart/internal/service/cart_service.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instruments/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/instruments/cmd/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instruments/internal/service/instrument_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/instruments/internal/service/instrument_service.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/order/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/order/cmd/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/order/internal/service/order_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/order/internal/service/order_service.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/users/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/users/cmd/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/users/intern/service/user_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/users/intern/service/user_service.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,34 +52,41 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;DefaultGoTemplateProperty&quot;: &quot;Go File&quot;,
-    &quot;Go Build.go build github.com/berik/GoTune/main.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.go.formatter.settings.were.checked&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.go.migrated.go.modules.settings&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.go.modules.go.list.on.any.changes.was.set&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
-    &quot;go.sdk.automatically.set&quot;: &quot;true&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/berik/Downloads/e-commerce&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.sourceCode.Go&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "DefaultGoTemplateProperty": "Go File",
+    "Go Build.go build github.com/berik/GoTune/main.executor": "Run",
+    "Go Test.order_service_test.go.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.go.formatter.settings.were.checked": "true",
+    "RunOnceActivity.go.migrated.go.modules.settings": "true",
+    "RunOnceActivity.go.modules.go.list.on.any.changes.was.set": "true",
+    "git-widget-placeholder": "main",
+    "go.import.settings.migrated": "true",
+    "go.sdk.automatically.set": "true",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/Users/berik/GolandProjects/GoTune/cart/internal/service",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.sourceCode.Go"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;postgresql&quot;,
-      &quot;mongo&quot;,
-      &quot;redis&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "postgresql",
+      "mongo",
+      "redis"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\berik\GolandProjects\GoTune\cart\internal\service" />
+      <recent name="C:\Users\berik\GolandProjects\GoTune\instruments\internal\service" />
+      <recent name="C:\Users\berik\GolandProjects\GoTune\users\intern\service" />
+      <recent name="C:\Users\berik\GolandProjects\GoTune\order\internal\service" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\berik\GolandProjects\GoTune\users\proto" />
       <recent name="C:\Users\berik\GolandProjects\GoTune\cart\proto" />
@@ -104,7 +95,7 @@
       <recent name="C:\Users\berik\GolandProjects\GoTune\api-gateway\cmd" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Go Test.order_service_test.go">
     <configuration name="go build github.com/berik/GoTune/main" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
       <module name="GoTune" />
       <working_directory value="$PROJECT_DIR$" />
@@ -114,8 +105,19 @@
       <filePath value="$PROJECT_DIR$/main/auth_service_server.go" />
       <method v="2" />
     </configuration>
+    <configuration name="order_service_test.go" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="GoTune" />
+      <working_directory value="$PROJECT_DIR$/order/internal/service" />
+      <root_directory value="$PROJECT_DIR$" />
+      <kind value="FILE" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/order/internal/service/order_service_test.go" />
+      <framework value="gotest" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Go Test.order_service_test.go" />
         <item itemvalue="Go Build.go build github.com/berik/GoTune/main" />
       </list>
     </recent_temporary>
